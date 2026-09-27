@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="3600">
+  <title>Accueil — EDRI Villemandeur</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="dashboard" aria-label="Tableau d'accueil">
+    <section class="topbar">
+      <div>
+        <p class="eyebrow">Bienvenue à l'agence</p>
+        <h1>EDRI <span>Villemandeur</span></h1>
+      </div>
+      <div class="clock-block">
+        <time id="clock" class="clock">--:--</time>
+        <div id="today" class="today">Chargement…</div>
+      </div>
+    </section>
+
+    <section class="content-grid">
+      <div class="video-card card">
+        <div class="card-heading"><span>À découvrir</span><span class="live-dot">●</span></div>
+        <div class="video-frame">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/xOe_2QgZXQc?autoplay=1&mute=1&controls=1&rel=0&loop=1&playlist=xOe_2QgZXQc&list=PLBlQy8tmk_XM"
+            title="Vidéo de l'agence"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowfullscreen></iframe>
+        </div>
+      </div>
+
+      <aside class="side-column">
+        <section class="weather-card card">
+          <div class="card-heading"><span>Météo à Villemandeur</span><span id="weather-icon" class="weather-icon">☁</span></div>
+          <div class="weather-main"><strong id="temperature">--°</strong><div><div id="weather-description">Chargement…</div><small id="feels-like"></small></div></div>
+          <div class="weather-details"><span>↑ <b id="max-temp">--°</b></span><span>↓ <b id="min-temp">--°</b></span><span>💧 <b id="humidity">--%</b></span></div>
+        </section>
+        <section class="name-day card">
+          <div class="card-heading"><span>La fête du jour</span><span>✦</span></div>
+          <p id="name-day">Chargement…</p>
+        </section>
+      </aside>
+    </section>
+
+    <section class="events-card card">
+      <div class="card-heading"><span>Prochains événements</span><span class="calendar-mark">▢</span></div>
+      <div id="events" class="events-list"><p class="muted">Chargement des événements…</p></div>
+    </section>
+    <footer>EDRI Villemandeur <span>•</span> 45700 Villemandeur</footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
