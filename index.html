@@ -11,27 +11,11 @@
   <main class="dashboard" aria-label="Tableau d'accueil">
     <section class="topbar">
       <div class="brand-block" aria-label="Logo de l'agence">
-        <div class="logo-mark" aria-hidden="true">
-          <svg viewBox="0 0 260 170" role="img" aria-label="Logo EQUANS">
-            <defs>
-              <linearGradient id="brandGradient" x1="0" x2="1">
-                <stop offset="0%" stop-color="#2ec7b6"/>
-                <stop offset="100%" stop-color="#0d8b87"/>
-              </linearGradient>
-            </defs>
-
-            <path d="M14 126 C 26 72, 78 20, 132 20 C 179 20, 205 42, 220 74 L 234 90 C 214 116, 184 138, 138 146 C 94 154, 50 144, 22 126 Z"
-              fill="url(#brandGradient)" opacity="0.98"/>
-            <path d="M38 135 L 100 43 L 128 43 L 69 135 Z" fill="url(#brandGradient)"/>
-            <path d="M122 135 L 185 43 L 214 43 L 154 135 Z" fill="url(#brandGradient)"/>
-            <path d="M134 95 L 170 95 L 215 135 L 182 135 Z" fill="#0d1117" opacity="0.08"/>
-          </svg>
-        </div>
-
-        <div class="brand-text">
-          <div class="brand-name">EQUANS</div>
-          <div class="brand-sub">DIGITAL</div>
-          <div class="brand-tag">Robotics &amp; Automation</div>
+        <img class="agency-logo" src="logo-equans.png" alt="EQUANS Digital — Robotics & Automation">
+        <div class="welcome-block">
+          <p class="eyebrow">Bienvenue</p>
+          <h1>Bienvenue chez <span>EQUANS Digital</span></h1>
+          <p class="location">EDRI Villemandeur</p>
         </div>
       </div>
 
@@ -43,10 +27,7 @@
 
     <section class="content-grid">
       <div class="video-card card">
-        <div class="card-heading">
-          <span>À découvrir</span>
-          <span class="live-dot">●</span>
-        </div>
+        <div class="card-heading"><span>À découvrir</span><span class="live-dot">●</span></div>
         <div class="video-frame">
           <iframe
             src="https://www.youtube-nocookie.com/embed/xOe_2QgZXQc?autoplay=1&mute=1&controls=1&rel=0&loop=1&playlist=xOe_2QgZXQc&list=PLBlQy8tmk_XM"
@@ -58,19 +39,11 @@
 
       <aside class="side-column">
         <section class="weather-card card">
-          <div class="card-heading">
-            <span>Météo à Villemandeur</span>
-            <span id="weather-icon" class="weather-icon">☁</span>
-          </div>
-
+          <div class="card-heading"><span>Météo à Villemandeur</span><span id="weather-icon" class="weather-icon">☁</span></div>
           <div class="weather-main">
             <strong id="temperature">--°</strong>
-            <div>
-              <div id="weather-description">Chargement…</div>
-              <small id="feels-like"></small>
-            </div>
+            <div><div id="weather-description">Chargement…</div><small id="feels-like"></small></div>
           </div>
-
           <div class="weather-details">
             <span>↑ <b id="max-temp">--°</b></span>
             <span>↓ <b id="min-temp">--°</b></span>
@@ -81,22 +54,12 @@
     </section>
 
     <section class="events-card card">
-      <div class="card-heading">
-        <span>Prochains événements</span>
-        <span class="calendar-mark">▢</span>
-      </div>
-      <div id="events" class="events-list">
-        <p class="muted">Chargement des événements…</p>
-      </div>
+      <div class="card-heading"><span>Prochains événements</span><span class="calendar-mark">▢</span></div>
+      <div id="events" class="events-list"><p class="muted">Chargement des événements…</p></div>
     </section>
 
-    <footer>
-      <span class="agency-footer">EDRI Villemandeur</span>
-      <span class="separator">•</span>
-      <span>45700 Villemandeur</span>
-    </footer>
+    <footer><span class="agency-footer">EDRI Villemandeur</span><span class="separator">•</span><span>45700 Villemandeur</span></footer>
   </main>
-
   <script src="app.js"></script>
 </body>
 </html>
