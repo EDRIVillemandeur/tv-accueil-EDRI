@@ -1,0 +1,31 @@
+:root {
+  color-scheme: dark;
+  --bg: #0d1117;
+  --panel: #151c25;
+  --panel-light: #1c2632;
+  --line: #2a3745;
+  --text: #f4f7fb;
+  --muted: #9aa9b8;
+  --accent: #48b4e8;
+  --accent-2: #77d2b2;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body { background: radial-gradient(circle at 80% 0%, #172b3a 0, var(--bg) 42%); color: var(--text); font-family: Arial, Helvetica, sans-serif; }
+.dashboard { max-width: 1800px; min-height: 100vh; margin: auto; padding: clamp(24px, 4vw, 64px); display: flex; flex-direction: column; gap: 22px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 30px; }
+.eyebrow { color: var(--accent); text-transform: uppercase; letter-spacing: .18em; font-size: clamp(10px, 1vw, 15px); margin: 0 0 7px; font-weight: bold; }
+h1 { margin: 0; font-size: clamp(28px, 4vw, 62px); letter-spacing: -.04em; } h1 span { font-weight: 300; color: #b6c5d1; }
+.clock-block { text-align: right; } .clock { font-size: clamp(38px, 6vw, 88px); font-weight: 700; letter-spacing: -.05em; line-height: .9; } .today { color: var(--muted); font-size: clamp(13px, 1.5vw, 22px); margin-top: 10px; text-transform: capitalize; }
+.content-grid { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(260px, .9fr); gap: 22px; }
+.card { background: linear-gradient(140deg, rgba(29,40,52,.94), rgba(17,23,31,.96)); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 14px 32px rgba(0,0,0,.18); overflow: hidden; }
+.card-heading { display: flex; justify-content: space-between; align-items: center; color: #d4e1eb; font-size: clamp(14px, 1.4vw, 20px); font-weight: bold; padding: 17px 20px; border-bottom: 1px solid var(--line); }
+.live-dot { color: #ef7373; font-size: 11px; } .calendar-mark { color: var(--accent); font-size: 25px; }
+.video-frame { aspect-ratio: 16 / 9; background: #080b0f; } .video-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+.side-column { display: flex; flex-direction: column; gap: 22px; } .weather-card, .name-day { flex: 1; }
+.weather-main { display: flex; align-items: center; gap: 20px; padding: 23px 20px 14px; } .weather-main strong { font-size: clamp(48px, 6vw, 84px); line-height: .8; letter-spacing: -.08em; } .weather-main div div { font-size: clamp(16px, 1.7vw, 25px); } small { display: block; color: var(--muted); margin-top: 8px; }
+.weather-details { display: flex; justify-content: space-between; color: var(--muted); padding: 10px 20px 22px; font-size: clamp(12px, 1.1vw, 17px); } .weather-details b { color: var(--text); } .weather-icon { font-size: 30px; }
+.name-day p { font-size: clamp(23px, 2.7vw, 42px); font-weight: bold; color: var(--accent-2); margin: 25px 20px; }
+.events-card { padding-bottom: 8px; } .events-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; padding: 16px 20px 20px; } .event { display: flex; align-items: center; gap: 15px; background: var(--panel-light); border-radius: 10px; padding: 14px 16px; } .event-date { min-width: 58px; text-align: center; color: var(--accent); font-weight: bold; text-transform: uppercase; font-size: 13px; } .event-date strong { display: block; color: var(--text); font-size: 28px; line-height: 1; } .event-title { font-size: clamp(15px, 1.4vw, 21px); font-weight: bold; } .muted { color: var(--muted); margin: 0; } footer { color: #687887; font-size: 12px; text-align: center; margin-top: auto; padding-top: 8px; } footer span { color: var(--accent); margin: 0 8px; }
+@media (max-width: 800px) { .dashboard { padding: 20px; } .topbar { align-items: flex-start; } .content-grid { grid-template-columns: 1fr; } .side-column { display: grid; grid-template-columns: 1fr 1fr; } }
+@media (max-width: 520px) { .side-column { display: flex; } .clock-block { min-width: 100px; } }
