@@ -1,8 +1,100 @@
 const VILLEMANDEUR = { latitude: 48.003, longitude: 2.697, timezone: 'Europe/Paris' };
-const weatherText = { 0: ['Ciel dégagé', '☀️'], 1: ['Peu nuageux', '🌤️'], 2: ['Partiellement nuageux', '⛅'], 3: ['Couvert', '☁️'], 45: ['Brouillard', '🌫️'], 48: ['Brouillard givrant', '🌫️'], 51: ['Bruine légère', '🌦️'], 53: ['Bruine', '🌦️'], 55: ['Bruine forte', '🌧️'], 61: ['Pluie légère', '🌦️'], 63: ['Pluie', '🌧️'], 65: ['Forte pluie', '🌧️'], 71: ['Neige légère', '🌨️'], 73: ['Neige', '❄️'], 75: ['Forte neige', '❄️'], 80: ['Averses', '🌦️'], 81: ['Averses', '🌦️'], 82: ['Fortes averses', '⛈️'], 95: ['Orage', '⛈️'], 99: ['Orage et grêle', '⛈️'] };
-const $ = id => document.getElementById(id);
-function updateClock() { const now = new Date(); $('clock').textContent = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }); $('today').textContent = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); }
-async function loadWeather() { try { const url = `https://api.open-meteo.com/v1/forecast?latitude=${VILLEMANDEUR.latitude}&longitude=${VILLEMANDEUR.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=${VILLEMANDEUR.timezone}&forecast_days=1`; const data = await fetch(url).then(r => r.json()); const current = data.current, daily = data.daily; const info = weatherText[current.weather_code] || ['Conditions variables', '🌤️']; $('temperature').textContent = `${Math.round(current.temperature_2m)}°`; $('weather-description').textContent = info[0]; $('weather-icon').textContent = info[1]; $('feels-like').textContent = `Ressenti ${Math.round(current.apparent_temperature)}°`; $('max-temp').textContent = `${Math.round(daily.temperature_2m_max[0])}°`; $('min-temp').textContent = `${Math.round(daily.temperature_2m_min[0])}°`; $('humidity').textContent = `${current.relative_humidity_2m}%`; } catch (e) { $('weather-description').textContent = 'Météo indisponible'; } }
-async function loadNameDay() { try { const d = await fetch('https://api.abalin.net/get/today?country=fr').then(r => r.json()); const names = d?.namedays?.fr || d?.namedays?.fr_FR; $('name-day').textContent = names || 'Consultez votre calendrier'; } catch (e) { $('name-day').textContent = 'Bonne journée !'; } }
-async function loadEvents() { try { const events = await fetch('events.json', { cache: 'no-store' }).then(r => r.json()); const now = new Date(); const upcoming = events.filter(e => new Date(`${e.date}T23:59:59`) >= now).sort((a,b) => a.date.localeCompare(b.date)); $('events').innerHTML = upcoming.length ? upcoming.map(e => { const date = new Date(`${e.date}T12:00:00`); return `<article class="event"><div class="event-date"><strong>${date.getDate()}</strong>${date.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', '')}</div><div class="event-title">${e.title}</div></article>`; }).join('') : '<p class="muted">Aucun événement à venir.</p>'; } catch (e) { $('events').innerHTML = '<p class="muted">Impossible de charger les événements.</p>'; } }
-updateClock(); setInterval(updateClock, 1000); loadWeather(); loadNameDay(); loadEvents(); setInterval(loadWeather, 30 * 60 * 1000); setInterval(loadEvents, 5 * 60 * 1000);
+
+const weatherText = {
+  0: ['Ciel dégagé', '☀️'],
+  1: ['Peu nuageux', '🌤️'],
+  2: ['Partiellement nuageux', '⛅'],
+  3: ['Couvert', '☁️'],
+  45: ['Brouillard', '🌫️'],
+  48: ['Brouillard givrant', '🌫️'],
+  51: ['Bruine légère', '🌦️'],
+  53: ['Bruine', '🌦️'],
+  55: ['Bruine forte', '🌧️'],
+  61: ['Pluie légère', '🌦️'],
+  63: ['Pluie', '🌧️'],
+  65: ['Forte pluie', '🌧️'],
+  71: ['Neige légère', '🌨️'],
+  73: ['Neige', '❄️'],
+  75: ['Forte neige', '❄️'],
+  80: ['Averses', '🌦️'],
+  81: ['Averses', '🌦️'],
+  82: ['Fortes averses', '⛈️'],
+  95: ['Orage', '⛈️'],
+  99: ['Orage et grêle', '⛈️']
+};
+
+const $ = (id) => document.getElementById(id);
+
+function updateClock() {
+  const now = new Date();
+  $('clock').textContent = now.toLocaleTimeString('fr-FR', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  $('today').textContent = now.toLocaleDateString('fr-FR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+}
+
+async function loadWeather() {
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${VILLEMANDEUR.latitude}&longitude=${VILLEMANDEUR.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=${VILLEMANDEUR.timezone}&forecast_days=1`;
+    const data = await fetch(url).then(r => r.json());
+
+    const current = data.current;
+    const daily = data.daily;
+    const info = weatherText[current.weather_code] || ['Conditions variables', '🌤️'];
+
+    $('temperature').textContent = `${Math.round(current.temperature_2m)}°`;
+    $('weather-description').textContent = info[0];
+    $('weather-icon').textContent = info[1];
+    $('feels-like').textContent = `Ressenti ${Math.round(current.apparent_temperature)}°`;
+    $('max-temp').textContent = `${Math.round(daily.temperature_2m_max[0])}°`;
+    $('min-temp').textContent = `${Math.round(daily.temperature_2m_min[0])}°`;
+    $('humidity').textContent = `${current.relative_humidity_2m}%`;
+  } catch (e) {
+    $('weather-description').textContent = 'Météo indisponible';
+  }
+}
+
+async function loadEvents() {
+  try {
+    const events = await fetch('events.json', { cache: 'no-store' }).then(r => r.json());
+    const now = new Date();
+
+    const upcoming = events
+      .filter(e => new Date(`${e.date}T23:59:59`) >= now)
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    $('events').innerHTML = upcoming.length
+      ? upcoming.map(e => {
+          const date = new Date(`${e.date}T12:00:00`);
+          const monthLabel = date.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', '');
+          return `
+            <article class="event">
+              <div class="event-date">
+                <strong>${date.getDate()}</strong>${monthLabel}
+              </div>
+              <div class="event-title">${e.title}</div>
+            </article>
+          `;
+        }).join('')
+      : '<p class="muted">Aucun événement à venir.</p>';
+
+  } catch (e) {
+    $('events').innerHTML = '<p class="muted">Impossible de charger les événements.</p>';
+  }
+}
+
+updateClock();
+setInterval(updateClock, 1000);
+
+loadWeather();
+loadEvents();
+
+setInterval(loadWeather, 30 * 60 * 1000);
+setInterval(loadEvents, 5 * 60 * 1000);
