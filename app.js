@@ -42,7 +42,7 @@ function updateClock() {
 
 async function loadWeather() {
   try {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${VILLEMANDEUR.latitude}&longitude=${VILLEMANDEUR.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=${VILLEMANDEUR.timezone}&forecast_days=1`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${VILLEMANDEUR.latitude}&longitude=${VILLEMANDEUR.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FParis`;
     const data = await fetch(url).then(r => r.json());
 
     const current = data.current;
@@ -75,7 +75,7 @@ async function loadEvents() {
           const date = new Date(`${e.date}T12:00:00`);
           const monthLabel = date.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', '');
           return `
-            <article class="event">
+            <article class="event" data-date="${e.date}">
               <div class="event-date">
                 <strong>${date.getDate()}</strong>${monthLabel}
               </div>
@@ -84,6 +84,13 @@ async function loadEvents() {
           `;
         }).join('')
       : '<p class="muted">Aucun événement à venir.</p>';
+
+    document.querySelectorAll('.event').forEach(card => {
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', () => {
+        window.location.href = 'calendar.html';
+      });
+    });
 
   } catch (e) {
     $('events').innerHTML = '<p class="muted">Impossible de charger les événements.</p>';
@@ -95,6 +102,13 @@ setInterval(updateClock, 1000);
 
 loadWeather();
 loadEvents();
-
 setInterval(loadWeather, 30 * 60 * 1000);
 setInterval(loadEvents, 5 * 60 * 1000);
+
+const eventsCard = document.querySelector('.events-card');
+if (eventsCard) {
+  eventsCard.style.cursor = 'pointer';
+  eventsCard.addEventListener('click', () => {
+    window.location.href = 'calendar.html';
+  });
+}
