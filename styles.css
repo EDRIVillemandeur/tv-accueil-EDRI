@@ -20,32 +20,32 @@ body {
 }
 
 .dashboard {
-  max-width: 3840px;
+  max-width: 100%;
   min-height: 100vh;
   margin: auto;
-  padding: 60px 80px;
+  padding: 40px 50px;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 25px;
 }
 
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 60px;
+  gap: 40px;
 }
 
 .brand-block {
   display: flex;
   align-items: center;
-  gap: 50px;
+  gap: 35px;
   min-width: 0;
 }
 
 .agency-logo {
   display: block;
-  width: 420px;
+  width: 300px;
   height: auto;
   object-fit: contain;
   border-radius: 8px;
@@ -54,22 +54,22 @@ body {
 
 .welcome-block {
   border-left: 4px solid var(--accent);
-  padding-left: 50px;
+  padding-left: 35px;
 }
 
 .eyebrow {
   color: var(--accent);
   text-transform: uppercase;
   letter-spacing: .18em;
-  font-size: 28px;
-  margin: 0 0 16px;
+  font-size: 20px;
+  margin: 0 0 12px;
   font-weight: bold;
 }
 
 h1 {
   margin: 0;
-  max-width: 1000px;
-  font-size: 88px;
+  max-width: 800px;
+  font-size: 56px;
   letter-spacing: -.04em;
   line-height: 1.05;
   font-weight: 700;
@@ -79,13 +79,13 @@ h1 span {
   display: block;
   color: #b6c5d1;
   font-weight: 300;
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 .location {
-  margin: 24px 0 0;
+  margin: 16px 0 0;
   color: var(--muted);
-  font-size: 32px;
+  font-size: 22px;
 }
 
 .clock-block {
@@ -94,7 +94,7 @@ h1 span {
 }
 
 .clock {
-  font-size: 160px;
+  font-size: 100px;
   font-weight: 700;
   letter-spacing: -.05em;
   line-height: .9;
@@ -103,22 +103,22 @@ h1 span {
 
 .today {
   color: var(--muted);
-  font-size: 36px;
-  margin-top: 20px;
+  font-size: 24px;
+  margin-top: 12px;
   text-transform: capitalize;
 }
 
 .content-grid {
   display: grid;
-  grid-template-columns: minmax(0, 2.1fr) minmax(600px, .9fr);
-  gap: 40px;
+  grid-template-columns: 1fr 0.65fr;
+  gap: 25px;
   align-items: start;
 }
 
 .card {
   background: linear-gradient(140deg, rgba(29,40,52,.94), rgba(17,23,31,.96));
   border: 2px solid var(--line);
-  border-radius: 20px;
+  border-radius: 16px;
   box-shadow: 0 20px 48px rgba(0,0,0,.24);
   overflow: hidden;
 }
@@ -128,20 +128,20 @@ h1 span {
   justify-content: space-between;
   align-items: center;
   color: #d4e1eb;
-  font-size: 40px;
+  font-size: 28px;
   font-weight: bold;
-  padding: 32px 40px;
+  padding: 20px 28px;
   border-bottom: 2px solid var(--line);
 }
 
 .live-dot {
   color: #ef7373;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .calendar-mark {
   color: var(--accent);
-  font-size: 48px;
+  font-size: 36px;
 }
 
 .video-frame {
@@ -159,7 +159,7 @@ h1 span {
 .side-column {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 25px;
 }
 
 .weather-card { height: fit-content; }
@@ -167,62 +167,62 @@ h1 span {
 .weather-main {
   display: flex;
   align-items: center;
-  gap: 40px;
-  padding: 40px 40px 24px;
+  gap: 28px;
+  padding: 28px 28px 18px;
 }
 
 .weather-main strong {
-  font-size: 140px;
+  font-size: 80px;
   line-height: .8;
   letter-spacing: -.08em;
 }
 
 .weather-main div div {
-  font-size: 48px;
+  font-size: 32px;
 }
 
 small {
   display: block;
   color: var(--muted);
-  margin-top: 12px;
-  font-size: 32px;
+  margin-top: 8px;
+  font-size: 22px;
 }
 
 .weather-details {
   display: flex;
   justify-content: space-around;
   color: var(--muted);
-  padding: 20px 40px 32px;
-  font-size: 32px;
+  padding: 14px 28px 22px;
+  font-size: 22px;
   border-top: 1px solid var(--line);
 }
 
 .weather-details b {
   color: var(--text);
-  font-size: 48px;
+  font-size: 32px;
 }
 
-.weather-icon { font-size: 64px; }
+.weather-icon { font-size: 48px; }
 
 .events-card { 
-  padding-bottom: 16px;
+  padding-bottom: 12px;
   cursor: pointer;
 }
 
 .events-list {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 20px;
-  padding: 24px 32px 32px;
+  gap: 14px;
+  padding: 18px 24px 24px;
 }
 
 .event {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 20px;
   background: var(--panel-light);
   border-radius: 12px;
-  padding: 24px 28px;
+  padding: 16px 20px;
   border-left: 4px solid var(--accent);
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -234,39 +234,39 @@ small {
 }
 
 .event-date {
-  min-width: 100px;
+  min-width: 80px;
   text-align: center;
   color: var(--accent);
   font-weight: bold;
   text-transform: uppercase;
-  font-size: 24px;
+  font-size: 18px;
 }
 
 .event-date strong {
   display: block;
   color: var(--text);
-  font-size: 56px;
+  font-size: 40px;
   line-height: 1;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .event-title {
-  font-size: 36px;
+  font-size: 24px;
   font-weight: bold;
 }
 
 .muted {
   color: var(--muted);
   margin: 0;
-  font-size: 32px;
+  font-size: 22px;
 }
 
 footer {
   color: #687887;
-  font-size: 20px;
+  font-size: 16px;
   text-align: center;
   margin-top: auto;
-  padding-top: 16px;
+  padding-top: 12px;
 }
 
 footer .agency-footer {
@@ -276,36 +276,36 @@ footer .agency-footer {
 
 footer .separator {
   color: var(--accent);
-  margin: 0 16px;
+  margin: 0 12px;
 }
 
 /* ===== STYLES CALENDRIER ===== */
 
 .calendar-page {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 48px 32px 80px;
+  max-width: 100%;
+  margin: 0;
+  padding: 32px 24px 60px;
 }
 
 .calendar-header {
-  margin-bottom: 28px;
+  margin-bottom: 20px;
 }
 
 .header-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: 20px;
 }
 
 .header-left h1 {
-  font-size: 72px;
+  font-size: 48px;
 }
 
 .subtitle {
-  margin: 12px 0 0;
+  margin: 8px 0 0;
   color: var(--muted);
-  font-size: 28px;
+  font-size: 20px;
 }
 
 .back-button,
@@ -332,14 +332,14 @@ footer .separator {
   background: var(--accent);
   color: #04151d;
   font-weight: bold;
-  padding: 16px 24px;
-  font-size: 24px;
+  padding: 12px 18px;
+  font-size: 18px;
 }
 
 .calendar-container {
   display: grid;
-  grid-template-columns: 1.5fr 0.9fr;
-  gap: 28px;
+  grid-template-columns: 1.4fr 0.8fr;
+  gap: 20px;
 }
 
 .calendar-section,
@@ -347,48 +347,48 @@ footer .separator {
 .events-section {
   background: linear-gradient(140deg, rgba(29,40,52,.94), rgba(17,23,31,.96));
   border: 2px solid var(--line);
-  border-radius: 20px;
+  border-radius: 16px;
   box-shadow: 0 20px 48px rgba(0,0,0,.24);
 }
 
 .calendar-section {
-  padding: 24px;
+  padding: 18px;
 }
 
 .calendar-controls {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 18px;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
 .month-year {
   margin: 0;
-  font-size: 42px;
+  font-size: 28px;
   text-align: center;
   flex: 1;
 }
 
 .month-nav-button {
-  width: 56px;
-  height: 56px;
+  width: 44px;
+  height: 44px;
   background: var(--panel-light);
   color: var(--text);
-  font-size: 28px;
+  font-size: 20px;
 }
 
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 12px;
+  gap: 8px;
 }
 
 .day-header {
   text-align: center;
   color: var(--muted);
-  font-size: 22px;
-  padding: 10px 0;
+  font-size: 16px;
+  padding: 8px 0;
   text-transform: uppercase;
 }
 
@@ -397,18 +397,18 @@ footer .separator {
 }
 
 .day-cell {
-  min-height: 120px;
+  min-height: 90px;
   background: rgba(255,255,255,.02);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 10px;
   color: var(--text);
   text-align: left;
-  padding: 10px 12px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  gap: 8px;
+  gap: 6px;
   cursor: pointer;
 }
 
@@ -419,7 +419,7 @@ footer .separator {
 }
 
 .day-number {
-  font-size: 28px;
+  font-size: 20px;
   font-weight: bold;
 }
 
@@ -427,13 +427,13 @@ footer .separator {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 24px;
-  min-height: 24px;
-  padding: 4px 6px;
+  min-width: 22px;
+  min-height: 22px;
+  padding: 2px 4px;
   border-radius: 999px;
   background: var(--accent);
   color: #06151d;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: bold;
 }
 
@@ -447,22 +447,22 @@ footer .separator {
 }
 
 .event-form-section {
-  padding: 0 0 24px;
+  padding: 0 0 18px;
 }
 
 .event-form {
-  padding: 28px 28px 8px;
+  padding: 20px 20px 6px;
   display: grid;
-  gap: 20px;
+  gap: 14px;
 }
 
 .form-group {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .form-group label {
-  font-size: 26px;
+  font-size: 18px;
   color: var(--muted);
 }
 
@@ -470,25 +470,25 @@ footer .separator {
   width: 100%;
   background: rgba(255,255,255,.03);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 8px;
   color: var(--text);
-  padding: 18px 16px;
-  font-size: 24px;
+  padding: 12px 12px;
+  font-size: 16px;
 }
 
 .btn-submit {
   background: var(--accent);
   color: #04151d;
   font-weight: bold;
-  padding: 18px 22px;
-  font-size: 24px;
+  padding: 12px 16px;
+  font-size: 16px;
 }
 
 .form-message {
-  min-height: 30px;
-  padding: 0 28px;
+  min-height: 25px;
+  padding: 0 20px;
   color: var(--accent-2);
-  font-size: 22px;
+  font-size: 16px;
 }
 
 .form-message.error {
@@ -496,76 +496,77 @@ footer .separator {
 }
 
 .events-section {
-  margin-top: 30px;
-  padding-bottom: 28px;
+  margin-top: 20px;
+  padding-bottom: 20px;
 }
 
 .events-list-full {
-  padding: 28px;
+  padding: 20px;
   display: grid;
-  gap: 14px;
+  gap: 10px;
 }
 
 .list-event {
   display: grid;
-  grid-template-columns: 1.2fr 2fr auto;
-  gap: 14px;
+  grid-template-columns: 1fr 1.5fr auto;
+  gap: 10px;
   align-items: center;
   background: rgba(255,255,255,.03);
   border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 18px 20px;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
 }
 
 .list-event-date {
   color: var(--accent);
-  font-size: 26px;
+  font-size: 16px;
   font-weight: bold;
 }
 
 .list-event-title {
-  font-size: 28px;
+  font-size: 16px;
   font-weight: bold;
 }
 
 .delete-event {
   background: rgba(239,107,107,.12);
   color: var(--danger);
-  padding: 10px 14px;
-  font-size: 20px;
+  padding: 6px 10px;
+  font-size: 14px;
 }
 
 .actions-bottom {
-  padding: 0 28px;
+  padding: 0 20px;
 }
 
 .btn-danger {
   background: rgba(239,107,107,.14);
   color: var(--danger);
-  padding: 16px 18px;
-  font-size: 22px;
+  padding: 12px 14px;
+  font-size: 16px;
   width: 100%;
 }
 
-@media (max-width: 2000px) {
-  .dashboard { padding: 40px 60px; gap: 30px; }
-  .topbar { gap: 40px; }
-  .brand-block { gap: 30px; }
-  .agency-logo { width: 300px; }
-  .eyebrow { font-size: 20px; }
-  h1 { font-size: 64px; }
-  .location { font-size: 24px; }
-  .clock { font-size: 120px; }
-  .today { font-size: 28px; }
-  .content-grid { gap: 30px; grid-template-columns: minmax(0, 2.1fr) minmax(400px, .9fr); }
-  .card-heading { font-size: 28px; padding: 24px 30px; }
-  .weather-main strong { font-size: 100px; }
-  .weather-main div div { font-size: 36px; }
-  .event { padding: 18px 22px; gap: 20px; }
-  .event-title { font-size: 28px; }
+@media (max-width: 1600px) {
+  .dashboard { padding: 30px 40px; gap: 20px; }
+  .topbar { gap: 30px; }
+  .brand-block { gap: 25px; }
+  .agency-logo { width: 250px; }
+  .eyebrow { font-size: 18px; }
+  h1 { font-size: 48px; }
+  .location { font-size: 18px; }
+  .clock { font-size: 80px; }
+  .today { font-size: 20px; }
+  .content-grid { gap: 20px; grid-template-columns: 1fr 0.6fr; }
+  .card-heading { font-size: 24px; padding: 16px 20px; }
+  .weather-main strong { font-size: 64px; }
+  .weather-main div div { font-size: 28px; }
+  .event { padding: 12px 16px; gap: 16px; }
+  .event-title { font-size: 20px; }
 }
 
-@media (max-width: 980px) {
+@media (max-width: 1200px) {
   .calendar-container {
     grid-template-columns: 1fr;
   }
@@ -580,6 +581,6 @@ footer .separator {
   }
 
   .calendar-page {
-    padding: 22px 18px 50px;
+    padding: 20px 16px 40px;
   }
 }
