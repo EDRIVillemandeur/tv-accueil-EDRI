@@ -37,18 +37,41 @@ function saveEvents(events) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
 }
 
+async function loadServerEvents() {
+  try {
+    const response = await fetch('events.json?t=' + new Date().getTime(), { cache: 'no-store' });
+    if (!response.ok) throw new Error('Réponse serveur invalide');
+    
+    const data = await response.json();
+    if (!Array.isArray(data)) return [];
+    
+    return data;
+  } catch (error) {
+    console.error('Erreur chargement serveur:', error);
+    return [];
+  }
+}
+
 async function loadDefaultEvents() {
   try {
-    const response = await fetch('events.json', { cache: 'no-store' });
-    const data = await response.json();
-    if (!Array.isArray(data) || data.length === 0) return;
-
-    const saved = getSavedEvents();
-    if (saved.length === 0) {
-      saveEvents(data);
-    }
+    // Charge les événements du serveur
+    const serverEvents = await loadServerEvents();
+    
+    // Fusionne avec les événements locaux
+    const localEvents = getSavedEvents();
+    const merged = [...serverEvents];
+    
+    // Ajoute les événements locaux qui ne sont pas sur le serveur
+    localEvents.forEach(localEvent => {
+      const exists = merged.some(se => se.date === localEvent.date && se.title === localEvent.title);
+      if (!exists) {
+        merged.push(localEvent);
+      }
+    });
+    
+    saveEvents(merged.sort((a, b) => a.date.localeCompare(b.date)));
   } catch (error) {
-    // Ignore
+    console.error('Erreur fusion événements:', error);
   }
 }
 
