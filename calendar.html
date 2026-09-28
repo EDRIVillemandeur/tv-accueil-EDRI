@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Calendrier des événements — EDRI Villemandeur</title>
+  <link rel="stylesheet" href="styles.css">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <style>
+    body { overflow: auto; }
+    * { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+  </style>
+</head>
+<body>
+  <main class="calendar-page" aria-label="Calendrier des événements">
+    <header class="calendar-header">
+      <div class="header-top">
+        <div class="header-left">
+          <h1>Gestion des événements</h1>
+          <p class="subtitle">Calendrier des événements de l'agence</p>
+        </div>
+        <button id="back-button" class="back-button" aria-label="Retour à l'accueil">
+          ← Retour
+        </button>
+      </div>
+    </header>
+
+    <div class="calendar-container">
+      <!-- Calendrier -->
+      <section class="calendar-section">
+        <div class="calendar-controls">
+          <button id="prev-month" class="month-nav-button" aria-label="Mois précédent">◀</button>
+          <h2 id="month-year" class="month-year">Septembre 2026</h2>
+          <button id="next-month" class="month-nav-button" aria-label="Mois suivant">▶</button>
+        </div>
+
+        <div class="calendar-grid">
+          <div class="day-header">Lun</div>
+          <div class="day-header">Mar</div>
+          <div class="day-header">Mer</div>
+          <div class="day-header">Jeu</div>
+          <div class="day-header">Ven</div>
+          <div class="day-header">Sam</div>
+          <div class="day-header">Dim</div>
+          <div id="calendar-days" class="calendar-days"></div>
+        </div>
+      </section>
+
+      <!-- Formulaire d'ajout d'événement -->
+      <section class="event-form-section card">
+        <div class="card-heading">
+          <span>Ajouter un événement</span>
+        </div>
+        
+        <form id="event-form" class="event-form">
+          <div class="form-group">
+            <label for="event-date">Date de l'événement</label>
+            <input type="date" id="event-date" required>
+          </div>
+
+          <div class="form-group">
+            <label for="event-title">Titre de l'événement</label>
+            <input type="text" id="event-title" placeholder="Ex: Réunion client, Visite..." required>
+          </div>
+
+          <button type="submit" class="btn-submit">Ajouter l'événement</button>
+        </form>
+
+        <div id="form-message" class="form-message"></div>
+      </section>
+    </div>
+
+    <!-- Liste des événements -->
+    <section class="events-section card">
+      <div class="card-heading">
+        <span>Tous les événements</span>
+      </div>
+      
+      <div id="all-events" class="events-list-full">
+        <p class="muted">Chargement des événements…</p>
+      </div>
+
+      <div class="actions-bottom">
+        <button id="clear-all" class="btn-danger">Effacer tous les événements</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="calendar.js"></script>
+</body>
+</html>
