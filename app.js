@@ -1,4 +1,5 @@
 const VILLEMANDEUR = { latitude: 48.003, longitude: 2.697, timezone: 'Europe/Paris' };
+const STORAGE_KEY = 'edri-events';
 
 const weatherText = {
   0: ['Ciel dégagé', '☀️'],
@@ -24,6 +25,17 @@ const weatherText = {
 };
 
 const $ = (id) => document.getElementById(id);
+
+function getSavedEvents() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    return [];
+  }
+}
 
 function updateClock() {
   try {
@@ -87,15 +99,33 @@ async function loadWeather() {
 
 async function loadEvents() {
   try {
-    // Force le rechargement du fichier depuis le serveur (pas de cache)
-    const response = await fetch('events.json?t=' + new Date().getTime(), { cache: 'no-store' });
-    if (!response.ok) throw new Error('Réponse événements invalide');
+    // Essaie de charger depuis le serveur en premier
+    let events = [];
+    try {
+      const response = await fetch('events.json?t=' + new Date().getTime(), { cache: 'no-store' });
+      if (response.ok) {
+        events = await response.json();
+        if (!Array.isArray(events)) events = [];
+      }
+    } catch (e) {
+      console.warn('Impossible de charger events.json du serveur', e);
+      events = [];
+    }
+
+    // Fusionne avec les événements du localStorage
+    const localEvents = getSavedEvents();
+    const allEvents = [...events];
     
-    const events = await response.json();
-    if (!Array.isArray(events)) throw new Error('Format événements invalide');
-    
+    localEvents.forEach(localEvent => {
+      const exists = allEvents.some(e => e.date === localEvent.date && e.title === localEvent.title);
+      if (!exists) {
+        allEvents.push(localEvent);
+      }
+    });
+
+    // Filtre pour les événements à venir
     const now = new Date();
-    const upcoming = events
+    const upcoming = allEvents
       .filter(e => new Date(`${e.date}T23:59:59`) >= now)
       .sort((a, b) => a.date.localeCompare(b.date));
 
@@ -139,8 +169,8 @@ function initializeUI() {
 
     setInterval(updateClock, 1000);
     setInterval(() => loadWeather().catch(e => console.error('Erreur rafraîchissement météo:', e)), 30 * 60 * 1000);
-    // Rafraîchit les événements toutes les 30 secondes pour que la TV voie les changements
-    setInterval(() => loadEvents().catch(e => console.error('Erreur rafraîchissement événements:', e)), 30 * 1000);
+    // Rafraîchit les événements toutes les 10 secondes
+    setInterval(() => loadEvents().catch(e => console.error('Erreur rafraîchissement événements:', e)), 10 * 1000);
 
     const eventsCard = document.querySelector('.events-card');
     if (eventsCard) {
