@@ -204,7 +204,10 @@ small {
 
 .weather-icon { font-size: 64px; }
 
-.events-card { padding-bottom: 16px; }
+.events-card { 
+  padding-bottom: 16px;
+  cursor: pointer;
+}
 
 .events-list {
   display: grid;
@@ -222,6 +225,12 @@ small {
   padding: 24px 28px;
   border-left: 4px solid var(--accent);
   cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.event:hover {
+  transform: translateX(4px);
+  box-shadow: 0 8px 16px rgba(72, 180, 232, 0.2);
 }
 
 .event-date {
@@ -270,6 +279,8 @@ footer .separator {
   margin: 0 16px;
 }
 
+/* ===== STYLES CALENDRIER ===== */
+
 .calendar-page {
   max-width: 1400px;
   margin: 0 auto;
@@ -309,11 +320,13 @@ footer .separator {
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
-.back-button,
-.month-nav-button,
-.btn-submit,
-.btn-danger,
-.delete-event:hover { opacity: 0.96; }
+.back-button:hover,
+.month-nav-button:hover,
+.btn-submit:hover,
+.btn-danger:hover,
+.delete-event:hover { 
+  opacity: 0.96; 
+}
 
 .back-button {
   background: var(--accent);
@@ -354,6 +367,7 @@ footer .separator {
   margin: 0;
   font-size: 42px;
   text-align: center;
+  flex: 1;
 }
 
 .month-nav-button {
@@ -401,6 +415,7 @@ footer .separator {
 .day-cell.empty-cell {
   opacity: 0.35;
   background: rgba(255,255,255,.01);
+  cursor: default;
 }
 
 .day-number {
@@ -423,7 +438,8 @@ footer .separator {
 }
 
 .today-cell {
-  border-color: var(--accent)
+  border-color: var(--accent);
+  border-width: 2px;
 }
 
 .has-events {
@@ -528,6 +544,7 @@ footer .separator {
   color: var(--danger);
   padding: 16px 18px;
   font-size: 22px;
+  width: 100%;
 }
 
 @media (max-width: 2000px) {
