@@ -48,7 +48,7 @@ async function loadDefaultEvents() {
       saveEvents(data);
     }
   } catch (error) {
-    // Ignore, the user may add its own events.
+    // Ignore
   }
 }
 
@@ -75,10 +75,11 @@ function renderCalendar() {
   const lastDay = new Date(year, month + 1, 0);
   const leadingDays = (firstDay.getDay() + 6) % 7;
   const totalDays = lastDay.getDate();
-  const cells = [];
 
   for (let i = 0; i < leadingDays; i += 1) {
-    cells.push({ empty: true });
+    const emptyCell = document.createElement('div');
+    emptyCell.className = 'day-cell empty-cell';
+    calendarDaysEl.appendChild(emptyCell);
   }
 
   for (let day = 1; day <= totalDays; day += 1) {
@@ -103,29 +104,15 @@ function renderCalendar() {
       eventTitleInput.focus();
     });
 
-    cells.push({ element: cell, dateKey });
+    calendarDaysEl.appendChild(cell);
   }
 
-  const totalCells = cells.length;
-  while (cells.length < 42) {
-    cells.push({ empty: true });
-  }
-
-  for (const item of cells) {
-    if (item.empty) {
-      const emptyCell = document.createElement('div');
-      emptyCell.className = 'day-cell empty-cell';
-      calendarDaysEl.appendChild(emptyCell);
-      continue;
-    }
-
-    calendarDaysEl.appendChild(item.element);
-  }
-
-  if (totalCells < 35) {
-    const filler = document.createElement('div');
-    filler.className = 'day-cell empty-cell';
-    calendarDaysEl.appendChild(filler);
+  const totalCells = leadingDays + totalDays;
+  const remainingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (let i = 0; i < remainingCells; i += 1) {
+    const emptyCell = document.createElement('div');
+    emptyCell.className = 'day-cell empty-cell';
+    calendarDaysEl.appendChild(emptyCell);
   }
 }
 
@@ -149,7 +136,7 @@ function renderEventsList() {
       <div class="list-event">
         <div class="list-event-date">${formattedDate}</div>
         <div class="list-event-title">${event.title}</div>
-        <button class="delete-event" data-date="${event.date}" data-title="${event.title}">Supprimer</button>
+        <button class="delete-event" type="button" data-date="${event.date}" data-title="${event.title}">Supprimer</button>
       </div>
     `;
   }).join('');
