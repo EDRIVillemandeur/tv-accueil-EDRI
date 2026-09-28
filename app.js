@@ -87,7 +87,8 @@ async function loadWeather() {
 
 async function loadEvents() {
   try {
-    const response = await fetch('events.json', { cache: 'no-store' });
+    // Force le rechargement du fichier depuis le serveur (pas de cache)
+    const response = await fetch('events.json?t=' + new Date().getTime(), { cache: 'no-store' });
     if (!response.ok) throw new Error('Réponse événements invalide');
     
     const events = await response.json();
@@ -138,7 +139,8 @@ function initializeUI() {
 
     setInterval(updateClock, 1000);
     setInterval(() => loadWeather().catch(e => console.error('Erreur rafraîchissement météo:', e)), 30 * 60 * 1000);
-    setInterval(() => loadEvents().catch(e => console.error('Erreur rafraîchissement événements:', e)), 5 * 60 * 1000);
+    // Rafraîchit les événements toutes les 30 secondes pour que la TV voie les changements
+    setInterval(() => loadEvents().catch(e => console.error('Erreur rafraîchissement événements:', e)), 30 * 1000);
 
     const eventsCard = document.querySelector('.events-card');
     if (eventsCard) {
