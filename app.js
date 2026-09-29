@@ -125,26 +125,55 @@ async function loadEvents() {
 
     // Filtre pour les événements à venir
     const now = new Date();
+    
     const upcoming = allEvents
-      .filter(e => new Date(`${e.date}T23:59:59`) >= now)
-      .sort((a, b) => a.date.localeCompare(b.date));
+    .filter(e => {
+     
+    const endDate = e.endDate || e.date;
+     
+    return new Date(`${endDate}T23:59:59`) >= now;
+    })
+    .sort((a, b) => {
+     
+    const dateA = e=> e.startDate || e.date;
+    return (a.startDate || a.date).localeCompare(b.startDate || b.date);
+     
+    });
 
     const eventsEl = $('events');
     if (!eventsEl) return;
     
     eventsEl.innerHTML = upcoming.length
       ? upcoming.map(e => {
-          const date = new Date(`${e.date}T12:00:00`);
-          const monthLabel = date.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', '');
-          return `
-            <article class="event" data-date="${e.date}">
-              <div class="event-date">
-                <strong>${date.getDate()}</strong>${monthLabel}
-              </div>
-              <div class="event-title">${e.title}</div>
-            </article>
-          `;
-        }).join('')
+       
+      const startDate = e.startDate || e.date;
+      const endDate = e.endDate;
+       
+      const date = new Date(`${startDate}T12:00:00`);
+      const monthLabel = date.toLocaleDateString('fr-FR', {
+      month: 'short'
+      }).replace('.', '');
+       
+      let displayDate = `<strong>${date.getDate()}</strong>${monthLabel}`;
+       
+      if (endDate) {
+      const end = new Date(`${endDate}T12:00:00`);
+       
+      displayDate = `
+      <strong>${date.getDate()}-${end.getDate()}</strong>
+      ${monthLabel}
+      `;
+      }
+       
+      return `
+      <article class="event">
+      <div class="event-date">
+      ${displayDate}
+      </div>
+      <div class="event-title">${e.title}</div>
+      </article>
+      `;
+      }).join('')
       : '<p class="muted">Aucun événement à venir.</p>';
 
     document.querySelectorAll('.event').forEach(card => {
