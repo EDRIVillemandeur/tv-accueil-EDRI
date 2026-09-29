@@ -548,6 +548,88 @@ footer .separator {
   width: 100%;
 }
 
+/* Media queries pour résolutions ≤ 1440px */
+@media (max-width: 1440px) {
+  .dashboard { padding: 32px 40px; gap: 22px; }
+  .topbar { gap: 32px; }
+  .brand-block { gap: 30px; }
+  .agency-logo { width: 280px; }
+  .eyebrow { font-size: 19px; }
+  h1 { font-size: 52px; }
+  .location { font-size: 20px; }
+  .clock { font-size: 90px; }
+  .today { font-size: 22px; }
+  .content-grid { gap: 22px; grid-template-columns: 1fr 0.62fr; }
+  .card-heading { font-size: 26px; padding: 18px 24px; }
+  .weather-main strong { font-size: 72px; }
+  .weather-main div div { font-size: 30px; }
+  .weather-main { gap: 24px; padding: 24px 24px 16px; }
+  .event { padding: 14px 18px; gap: 18px; }
+  .event-title { font-size: 22px; }
+}
+
+@media (max-width: 1280px) {
+  .dashboard { padding: 28px 32px; gap: 20px; }
+  .topbar { gap: 28px; }
+  .brand-block { gap: 28px; }
+  .agency-logo { width: 250px; }
+  .eyebrow { font-size: 18px; }
+  h1 { font-size: 48px; }
+  .location { font-size: 18px; }
+  .clock { font-size: 80px; }
+  .today { font-size: 20px; }
+  .content-grid { gap: 20px; grid-template-columns: 1fr 0.6fr; }
+  .card-heading { font-size: 24px; padding: 16px 20px; }
+  .weather-main strong { font-size: 64px; }
+  .weather-main div div { font-size: 28px; }
+  .weather-main { gap: 22px; padding: 22px 22px 14px; }
+  .event { padding: 12px 16px; gap: 16px; }
+  .event-title { font-size: 20px; }
+  .event-date strong { font-size: 36px; }
+  small { font-size: 20px; }
+  .weather-details b { font-size: 28px; }
+  .weather-icon { font-size: 44px; }
+  .calendar-page { padding: 28px 20px 50px; }
+  .header-left h1 { font-size: 44px; }
+  .calendar-container { grid-template-columns: 1.2fr 0.75fr; }
+}
+
+@media (max-width: 1024px) {
+  .dashboard { padding: 24px 24px; gap: 18px; }
+  .topbar { gap: 24px; }
+  .brand-block { gap: 24px; }
+  .agency-logo { width: 220px; }
+  .eyebrow { font-size: 16px; }
+  h1 { font-size: 44px; }
+  .location { font-size: 16px; }
+  .clock { font-size: 72px; }
+  .today { font-size: 18px; }
+  .content-grid { gap: 18px; grid-template-columns: 1fr 0.55fr; }
+  .card-heading { font-size: 22px; padding: 14px 18px; }
+  .weather-main strong { font-size: 56px; }
+  .weather-main div div { font-size: 24px; }
+  .weather-main { gap: 20px; padding: 20px 20px 12px; }
+  .event { padding: 10px 14px; gap: 14px; }
+  .event-title { font-size: 18px; }
+  .event-date strong { font-size: 32px; }
+  small { font-size: 18px; }
+  .weather-details { font-size: 20px; padding: 12px 20px 18px; }
+  .weather-details b { font-size: 24px; }
+  .weather-icon { font-size: 40px; }
+  .calendar-page { padding: 24px 16px 40px; }
+  .header-left h1 { font-size: 40px; }
+  .calendar-container { grid-template-columns: 1fr; }
+  
+  .header-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .list-event {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 1600px) {
   .dashboard { padding: 30px 40px; gap: 20px; }
   .topbar { gap: 30px; }
