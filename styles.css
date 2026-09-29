@@ -504,6 +504,8 @@ footer .separator {
   padding: 20px;
   display: grid;
   gap: 10px;
+  max-height: 180px;
+  overflow-y: auto;
 }
 
 .list-event {
@@ -580,37 +582,37 @@ footer .separator {
   .muted { font-size: 17px; }
   footer { font-size: 13px; padding-top: 4px; }
 
-  .calendar-page { padding: 22px 18px 35px; }
-  .calendar-header { margin-bottom: 14px; }
-  .header-top { gap: 14px; }
-  .header-left h1 { font-size: 38px; }
-  .subtitle { margin-top: 5px; font-size: 16px; }
-  .back-button { padding: 9px 14px; font-size: 16px; }
-  .calendar-container { gap: 14px; grid-template-columns: 1.25fr 0.75fr; }
-  .calendar-section, .event-form-section, .events-section { border-radius: 12px; }
-  .calendar-section { padding: 12px; }
-  .calendar-controls { gap: 7px; margin-bottom: 9px; }
-  .month-year { font-size: 23px; }
-  .month-nav-button { width: 36px; height: 36px; font-size: 16px; }
-  .calendar-grid { gap: 5px; }
-  .day-header { font-size: 13px; padding: 5px 0; }
-  .day-cell { min-height: 68px; padding: 5px 7px; gap: 4px; border-radius: 7px; }
-  .day-number { font-size: 17px; }
-  .day-badge { min-width: 18px; min-height: 18px; padding: 1px 3px; font-size: 12px; }
-  .event-form-section { padding-bottom: 12px; }
-  .event-form { padding: 14px 14px 4px; gap: 10px; }
-  .form-group { gap: 5px; }
-  .form-group label { font-size: 15px; }
-  .form-group input { padding: 9px 10px; font-size: 14px; }
-  .btn-submit, .btn-danger { padding: 9px 12px; font-size: 14px; }
-  .form-message { min-height: 20px; padding: 0 14px; font-size: 14px; }
-  .events-section { margin-top: 14px; padding-bottom: 14px; }
-  .events-list-full { padding: 14px; gap: 7px; }
-  .list-event { padding: 9px 10px; font-size: 13px; }
-  .list-event-date { font-size: 14px; }
-  .list-event-title { font-size: 14px; }
-  .delete-event { padding: 5px 8px; font-size: 13px; }
-  .actions-bottom { padding: 0 14px; }
+  .calendar-page { padding: 16px 12px 25px; }
+  .calendar-header { margin-bottom: 10px; }
+  .header-top { gap: 10px; }
+  .header-left h1 { font-size: 32px; margin: 0; }
+  .subtitle { margin-top: 3px; font-size: 13px; }
+  .back-button { padding: 7px 12px; font-size: 14px; }
+  .calendar-container { gap: 10px; grid-template-columns: 1.2fr 0.7fr; }
+  .calendar-section, .event-form-section, .events-section { border-radius: 10px; }
+  .calendar-section { padding: 10px; }
+  .calendar-controls { gap: 5px; margin-bottom: 8px; }
+  .month-year { font-size: 20px; }
+  .month-nav-button { width: 32px; height: 32px; font-size: 14px; }
+  .calendar-grid { gap: 4px; }
+  .day-header { font-size: 11px; padding: 3px 0; }
+  .day-cell { min-height: 55px; padding: 4px 6px; gap: 3px; border-radius: 6px; }
+  .day-number { font-size: 14px; }
+  .day-badge { min-width: 16px; min-height: 16px; padding: 0px 2px; font-size: 11px; }
+  .event-form-section { padding-bottom: 10px; }
+  .event-form { padding: 12px 12px 4px; gap: 8px; }
+  .form-group { gap: 4px; }
+  .form-group label { font-size: 13px; }
+  .form-group input { padding: 8px 8px; font-size: 12px; }
+  .btn-submit, .btn-danger { padding: 8px 10px; font-size: 12px; }
+  .form-message { min-height: 18px; padding: 0 12px; font-size: 12px; }
+  .events-section { margin-top: 10px; padding-bottom: 10px; }
+  .events-list-full { padding: 12px; gap: 6px; max-height: 140px; }
+  .list-event { padding: 8px 9px; font-size: 12px; gap: 8px; }
+  .list-event-date { font-size: 12px; }
+  .list-event-title { font-size: 12px; }
+  .delete-event { padding: 4px 6px; font-size: 11px; }
+  .actions-bottom { padding: 0 12px; }
 }
 
 @media (max-width: 1200px) {
@@ -624,10 +626,11 @@ footer .separator {
   .weather-main strong { font-size: 44px; }
   .weather-main div div { font-size: 19px; }
   .event-title { font-size: 15px; }
-  .calendar-page { padding: 18px 14px 30px; }
-  .header-left h1 { font-size: 32px; }
+  .calendar-page { padding: 14px 10px 20px; }
+  .header-left h1 { font-size: 28px; }
   .calendar-container { grid-template-columns: 1fr; }
   .header-top { flex-direction: row; align-items: center; }
+  .events-list-full { max-height: 120px; }
 }
 
 @media (max-width: 800px) {
