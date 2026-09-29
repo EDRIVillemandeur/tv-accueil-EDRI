@@ -1,14 +1,17 @@
 [
   {
-    "date": "2026-09-30",
+    "startDate": "2026-09-30",
+    "endDate": "2026-09-30",
     "title": "Visite client MICROPORT"
   },
   {
-    "date": "2026-09-30",
+    "startDate": "2026-09-30",
+    "endDate": "2026-10-01",
     "title": "Audit ISO9001"
   },
   {
-    "date": "2026-11-25",
+    "startDate": "2026-11-25",
+    "endDate": "2026-11-26",
     "title": "Journées Portes Ouvertes"
   }
 ]
