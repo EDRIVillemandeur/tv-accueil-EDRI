@@ -582,37 +582,37 @@ footer .separator {
   .muted { font-size: 17px; }
   footer { font-size: 13px; padding-top: 4px; }
 
-  .calendar-page { padding: 16px 12px 25px; }
-  .calendar-header { margin-bottom: 10px; }
-  .header-top { gap: 10px; }
-  .header-left h1 { font-size: 32px; margin: 0; }
-  .subtitle { margin-top: 3px; font-size: 13px; }
-  .back-button { padding: 7px 12px; font-size: 14px; }
-  .calendar-container { gap: 10px; grid-template-columns: 1.2fr 0.7fr; }
-  .calendar-section, .event-form-section, .events-section { border-radius: 10px; }
-  .calendar-section { padding: 10px; }
-  .calendar-controls { gap: 5px; margin-bottom: 8px; }
-  .month-year { font-size: 20px; }
-  .month-nav-button { width: 32px; height: 32px; font-size: 14px; }
-  .calendar-grid { gap: 4px; }
-  .day-header { font-size: 11px; padding: 3px 0; }
-  .day-cell { min-height: 55px; padding: 4px 6px; gap: 3px; border-radius: 6px; }
-  .day-number { font-size: 14px; }
-  .day-badge { min-width: 16px; min-height: 16px; padding: 0px 2px; font-size: 11px; }
-  .event-form-section { padding-bottom: 10px; }
-  .event-form { padding: 12px 12px 4px; gap: 8px; }
-  .form-group { gap: 4px; }
-  .form-group label { font-size: 13px; }
-  .form-group input { padding: 8px 8px; font-size: 12px; }
-  .btn-submit, .btn-danger { padding: 8px 10px; font-size: 12px; }
-  .form-message { min-height: 18px; padding: 0 12px; font-size: 12px; }
-  .events-section { margin-top: 10px; padding-bottom: 10px; }
-  .events-list-full { padding: 12px; gap: 6px; max-height: 140px; }
-  .list-event { padding: 8px 9px; font-size: 12px; gap: 8px; }
-  .list-event-date { font-size: 12px; }
-  .list-event-title { font-size: 12px; }
-  .delete-event { padding: 4px 6px; font-size: 11px; }
-  .actions-bottom { padding: 0 12px; }
+ .calendar-page { padding: 12px 10px 15px; }
+  .calendar-header { margin-bottom: 8px; }
+  .header-top { gap: 8px; }
+  .header-left h1 { font-size: 28px; margin: 0; }
+  .subtitle { margin-top: 2px; font-size: 12px; }
+  .back-button { padding: 6px 10px; font-size: 12px; }
+  .calendar-container { gap: 8px; grid-template-columns: 1.15fr 0.65fr; }
+  .calendar-section, .event-form-section, .events-section { border-radius: 8px; }
+  .calendar-section { padding: 8px; }
+  .calendar-controls { gap: 4px; margin-bottom: 6px; }
+  .month-year { font-size: 18px; }
+  .month-nav-button { width: 28px; height: 28px; font-size: 12px; }
+  .calendar-grid { gap: 3px; }
+  .day-header { font-size: 10px; padding: 2px 0; }
+  .day-cell { min-height: 48px; padding: 3px 4px; gap: 2px; border-radius: 4px; }
+  .day-number { font-size: 12px; }
+  .day-badge { min-width: 14px; min-height: 14px; padding: 0px 1px; font-size: 10px; }
+  .event-form-section { padding-bottom: 8px; }
+  .event-form { padding: 10px 10px 3px; gap: 6px; }
+  .form-group { gap: 3px; }
+  .form-group label { font-size: 11px; }
+  .form-group input { padding: 6px 7px; font-size: 11px; }
+  .btn-submit, .btn-danger { padding: 6px 8px; font-size: 11px; }
+  .form-message { min-height: 16px; padding: 0 10px; font-size: 10px; }
+  .events-section { margin-top: 8px; padding-bottom: 8px; }
+  .events-list-full { padding: 8px; gap: 4px; max-height: 100px; }
+  .list-event { padding: 6px 8px; font-size: 11px; gap: 6px; }
+  .list-event-date { font-size: 11px; }
+  .list-event-title { font-size: 11px; }
+  .delete-event { padding: 3px 5px; font-size: 10px; }
+  .actions-bottom { padding: 0 8px; }
 }
 
 @media (max-width: 1200px) {
@@ -626,11 +626,11 @@ footer .separator {
   .weather-main strong { font-size: 44px; }
   .weather-main div div { font-size: 19px; }
   .event-title { font-size: 15px; }
-  .calendar-page { padding: 14px 10px 20px; }
+  .calendar-page { padding: 12px 10px 15px; }
   .header-left h1 { font-size: 28px; }
   .calendar-container { grid-template-columns: 1fr; }
   .header-top { flex-direction: row; align-items: center; }
-  .events-list-full { max-height: 120px; }
+  .events-list-full { max-height: 80px; }
 }
 
 @media (max-width: 800px) {
