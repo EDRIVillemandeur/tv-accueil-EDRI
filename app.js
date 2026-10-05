@@ -65,7 +65,7 @@ function updateClock() {
 
 async function loadWeather() {
   try {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${VILLEMANDEUR.latitude}&longitude=${VILLEMANDEUR.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FParis`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${VILLEMANDEUR.latitude}&longitude=${VILLEMANDEUR.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=${VILLEMANDEUR.timezone}`;
     
     const response = await fetch(url, { timeout: 5000 });
     if (!response.ok) throw new Error('Réponse météo invalide');
@@ -99,39 +99,39 @@ async function loadWeather() {
 
 async function loadEvents() {
   try {
-    // Essaie de charger depuis le serveur en premier
-    let events = [];
+    let fileEvents = [];
     try {
       const response = await fetch('events.json?t=' + new Date().getTime(), { cache: 'no-store' });
       if (response.ok) {
-        events = await response.json();
-        if (!Array.isArray(events)) events = [];
+        fileEvents = await response.json();
+        if (!Array.isArray(fileEvents)) fileEvents = [];
       }
     } catch (e) {
-      console.warn('Impossible de charger events.json du serveur', e);
-      events = [];
+      console.warn('Impossible de charger events.json', e);
     }
 
-    // Fusionne avec les événements du localStorage
     const localEvents = getSavedEvents();
-    const allEvents = [...events];
-    
+    const allEvents = [...fileEvents];
+
     localEvents.forEach(localEvent => {
-      const exists = allEvents.some(e => e.date === localEvent.date && e.title === localEvent.title);
+      const exists = allEvents.some(e => {
+        if (e.date && localEvent.date) return e.date === localEvent.date && e.title === localEvent.title;
+        if (e.startDate && localEvent.startDate) {
+          return e.startDate === localEvent.startDate && e.endDate === localEvent.endDate && e.title === localEvent.title;
+        }
+        return false;
+      });
       if (!exists) {
         allEvents.push(localEvent);
       }
     });
 
-    // Filtre pour les événements à venir
     const now = new Date();
-    
     const MAX_EVENTS_HOME = 3;
-    
-    const upcoming = events
+    const upcoming = allEvents
       .filter(e => {
         const endDate = e.endDate || e.date;
-        return new Date(`${endDate}T23:59:59`) >= new Date();
+        return new Date(`${endDate}T23:59:59`) >= now;
       })
       .sort((a, b) => {
         const dateA = a.startDate || a.date;
@@ -142,38 +142,28 @@ async function loadEvents() {
 
     const eventsEl = $('events');
     if (!eventsEl) return;
-    
+
     eventsEl.innerHTML = upcoming.length
       ? upcoming.map(e => {
-       
-      const startDate = e.startDate || e.date;
-      const endDate = e.endDate;
-       
-      const date = new Date(`${startDate}T12:00:00`);
-      const monthLabel = date.toLocaleDateString('fr-FR', {
-      month: 'short'
-      }).replace('.', '');
-       
-      let displayDate = `<strong>${date.getDate()}</strong>${monthLabel}`;
-       
-      if (endDate) {
-      const end = new Date(`${endDate}T12:00:00`);
-       
-      displayDate = `
-      <strong>${date.getDate()}-${end.getDate()}</strong>
-      ${monthLabel}
-      `;
-      }
-       
-      return `
-      <article class="event">
-      <div class="event-date">
-      ${displayDate}
-      </div>
-      <div class="event-title">${e.title}</div>
-      </article>
-      `;
-      }).join('')
+          const startDate = e.startDate || e.date;
+          const endDate = e.endDate;
+          const date = new Date(`${startDate}T12:00:00`);
+          const monthLabel = date.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', '');
+
+          let displayDate = `<strong>${date.getDate()}</strong>${monthLabel}`;
+
+          if (endDate) {
+            const end = new Date(`${endDate}T12:00:00`);
+            displayDate = `<strong>${date.getDate()}-${end.getDate()}</strong>${monthLabel}`;
+          }
+
+          return `
+            <article class="event">
+              <div class="event-date">${displayDate}</div>
+              <div class="event-title">${e.title}</div>
+            </article>
+          `;
+        }).join('')
       : '<p class="muted">Aucun événement à venir.</p>';
 
     document.querySelectorAll('.event').forEach(card => {
@@ -198,7 +188,6 @@ function initializeUI() {
 
     setInterval(updateClock, 1000);
     setInterval(() => loadWeather().catch(e => console.error('Erreur rafraîchissement météo:', e)), 30 * 60 * 1000);
-    // Rafraîchit les événements toutes les 10 secondes
     setInterval(() => loadEvents().catch(e => console.error('Erreur rafraîchissement événements:', e)), 10 * 1000);
 
     const eventsCard = document.querySelector('.events-card');
