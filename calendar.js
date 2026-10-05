@@ -1,4 +1,5 @@
 const API_BASE = '/api/events';
+const STORAGE_KEY = 'edri-events';
 
 const monthYearEl = document.getElementById('month-year');
 const calendarDaysEl = document.getElementById('calendar-days');
@@ -45,21 +46,67 @@ function toggleEventType() {
 
 eventTypeSelect.addEventListener('change', toggleEventType);
 
-async function loadEvents() {
+function getSavedEvents() {
   try {
-    const response = await fetch(API_BASE, { cache: 'no-store' });
-    if (!response.ok) throw new Error('Erreur serveur');
-    events = await response.json();
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.error('Erreur lecture localStorage:', error);
+    return [];
+  }
+}
+
+function saveEvents(eventsArray) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(eventsArray));
     return true;
   } catch (error) {
-    console.error('Erreur chargement événements:', error);
-    showMessage('Erreur lors du chargement des événements.', true);
+    console.error('Erreur écriture localStorage:', error);
     return false;
   }
 }
 
+async function loadInitialEvents() {
+  try {
+    const response = await fetch('events.json?t=' + new Date().getTime(), { cache: 'no-store' });
+    if (!response.ok) throw new Error('Impossible de charger events.json');
+    
+    const fileEvents = await response.json();
+    if (!Array.isArray(fileEvents)) return;
+
+    const localEvents = getSavedEvents();
+    const merged = [...fileEvents];
+    
+    localEvents.forEach(localEvent => {
+      const exists = merged.some(e => {
+        if (e.date && localEvent.date) return e.date === localEvent.date && e.title === localEvent.title;
+        if (e.startDate && localEvent.startDate) {
+          return e.startDate === localEvent.startDate && e.endDate === localEvent.endDate && e.title === localEvent.title;
+        }
+        return false;
+      });
+      if (!exists) {
+        merged.push(localEvent);
+      }
+    });
+
+    saveEvents(merged.sort((a, b) => {
+      const dateA = a.startDate || a.date;
+      const dateB = b.startDate || b.date;
+      return dateA.localeCompare(dateB);
+    }));
+
+    events = getSavedEvents();
+  } catch (error) {
+    console.error('Erreur chargement initial:', error);
+    events = getSavedEvents();
+  }
+}
+
 function getEventsForDate(dateKey) {
-  return events.filter(event => {
+  return getSavedEvents().filter(event => {
     if (event.date) return event.date === dateKey;
     if (event.startDate && event.endDate) {
       return dateKey >= event.startDate && dateKey <= event.endDate;
@@ -131,7 +178,7 @@ function renderCalendar() {
 }
 
 function renderEventsList() {
-  const sorted = [...events].sort((a, b) => {
+  const sorted = getSavedEvents().sort((a, b) => {
     const dateA = a.startDate || a.date;
     const dateB = b.startDate || b.date;
     return dateA.localeCompare(dateB);
@@ -209,7 +256,7 @@ function resetForm() {
   eventDateInput.value = formatDateKey(new Date());
 }
 
-async function submitEvent(eventDate, eventStartDate, eventEndDate, eventTitle) {
+function submitEvent(eventDate, eventStartDate, eventEndDate, eventTitle) {
   const trimmedTitle = eventTitle.trim();
   
   if (!trimmedTitle) {
@@ -235,47 +282,57 @@ async function submitEvent(eventDate, eventStartDate, eventEndDate, eventTitle) 
   }
 
   const editId = editEventIdInput.value;
-  
+  const currentEvents = getSavedEvents();
+
   try {
-    let endpoint = API_BASE;
-    let method = 'POST';
     let payload;
-
-    if (editId !== '') {
-      endpoint = `${API_BASE}/${editId}`;
-      method = 'PUT';
-    }
-
     if (isSingle) {
       payload = { date: eventDate, title: trimmedTitle };
     } else {
       payload = { startDate: eventStartDate, endDate: eventEndDate, title: trimmedTitle };
     }
 
-    const response = await fetch(endpoint, {
-      method: method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+    if (editId !== '') {
+      const index = parseInt(editId, 10);
+      currentEvents[index] = payload;
+      showMessage('Événement modifié avec succès.');
+    } else {
+      const exists = currentEvents.some(e => {
+        if (e.date && payload.date) return e.date === payload.date && e.title === payload.title;
+        if (e.startDate && payload.startDate) {
+          return e.startDate === payload.startDate && e.endDate === payload.endDate && e.title === payload.title;
+        }
+        return false;
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Erreur serveur');
+      if (exists) {
+        showMessage('Cet événement existe déjà.', true);
+        return;
+      }
+
+      currentEvents.push(payload);
+      showMessage('Événement ajouté avec succès.');
     }
 
-    await loadEvents();
+    currentEvents.sort((a, b) => {
+      const dateA = a.startDate || a.date;
+      const dateB = b.startDate || b.date;
+      return dateA.localeCompare(dateB);
+    });
+
+    saveEvents(currentEvents);
     resetForm();
-    showMessage(editId !== '' ? 'Événement modifié avec succès.' : 'Événement ajouté avec succès.');
     renderCalendar();
     renderEventsList();
   } catch (error) {
     console.error('Erreur:', error);
-    showMessage('Erreur : ' + error.message, true);
+    showMessage('Erreur lors de la sauvegarde.', true);
   }
 }
 
 function editEvent(index) {
-  const event = events[index];
+  const currentEvents = getSavedEvents();
+  const event = currentEvents[index];
   if (!event) return;
 
   editEventIdInput.value = index;
@@ -294,21 +351,15 @@ function editEvent(index) {
   eventTitleInput.focus();
 }
 
-async function deleteEvent(index) {
+function deleteEvent(index) {
   if (!window.confirm('Supprimer cet événement ?')) return;
 
-  try {
-    const response = await fetch(`${API_BASE}/${index}`, { method: 'DELETE' });
-    if (!response.ok) throw new Error('Erreur serveur');
-
-    await loadEvents();
-    showMessage('Événement supprimé.');
-    renderCalendar();
-    renderEventsList();
-  } catch (error) {
-    console.error('Erreur:', error);
-    showMessage('Erreur lors de la suppression.', true);
-  }
+  const currentEvents = getSavedEvents();
+  currentEvents.splice(index, 1);
+  saveEvents(currentEvents);
+  showMessage('Événement supprimé.');
+  renderCalendar();
+  renderEventsList();
 }
 
 eventForm.addEventListener('submit', (e) => {
@@ -322,22 +373,13 @@ eventForm.addEventListener('submit', (e) => {
   );
 });
 
-clearAllButton.addEventListener('click', async () => {
+clearAllButton.addEventListener('click', () => {
   if (!window.confirm('Supprimer tous les événements ?')) return;
 
-  try {
-    const indexesToDelete = events.length - 1;
-    for (let i = indexesToDelete; i >= 0; i--) {
-      await fetch(`${API_BASE}/${i}`, { method: 'DELETE' });
-    }
-    await loadEvents();
-    showMessage('Tous les événements ont été supprimés.');
-    renderCalendar();
-    renderEventsList();
-  } catch (error) {
-    console.error('Erreur:', error);
-    showMessage('Erreur lors de la suppression.', true);
-  }
+  saveEvents([]);
+  showMessage('Tous les événements ont été supprimés.');
+  renderCalendar();
+  renderEventsList();
 });
 
 prevMonthButton.addEventListener('click', () => {
@@ -355,7 +397,7 @@ backButton.addEventListener('click', () => {
 });
 
 (async function initCalendar() {
-  await loadEvents();
+  await loadInitialEvents();
   eventDateInput.value = formatDateKey(new Date());
   toggleEventType();
   renderCalendar();
