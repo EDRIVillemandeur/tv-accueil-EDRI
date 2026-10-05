@@ -22,6 +22,7 @@ const editEventIdInput = document.getElementById('edit-event-id');
 let currentMonth = new Date();
 currentMonth.setDate(1);
 let events = [];
+let datePickers = {};
 
 function formatDateKey(date) {
   const y = date.getFullYear();
@@ -30,16 +31,357 @@ function formatDateKey(date) {
   return `${y}-${m}-${d}`;
 }
 
+function formatDateDisplay(dateKey) {
+  if (!dateKey) return '';
+  const [year, month, day] = dateKey.split('-');
+  if (!year || !month || !day) return '';
+  return `${day}/${month}/${year}`;
+}
+
+function updateDateInputDisplay(input, dateValue) {
+  if (!input) return;
+  input.value = formatDateDisplay(dateValue);
+  input.dataset.value = dateValue || '';
+}
+
+function getDatePickerState(input) {
+  if (!input || !input.dataset.value) {
+    return { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getDate() };
+  }
+  const [year, month, day] = input.dataset.value.split('-');
+  return { year: Number(year), month: Number(month), day: Number(day) };
+}
+
+function createDatePicker(inputElement) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'date-picker-wrapper';
+
+  const textInput = document.createElement('input');
+  textInput.type = 'text';
+  textInput.readOnly = true;
+  textInput.placeholder = 'JJ/MM/YYYY';
+  textInput.className = 'date-picker-input';
+
+  const openButton = document.createElement('button');
+  openButton.type = 'button';
+  openButton.className = 'date-picker-button';
+  openButton.textContent = '📅';
+
+  wrapper.appendChild(textInput);
+  wrapper.appendChild(openButton);
+
+  let modal = null;
+  let selectedYear = null;
+  let selectedMonth = null;
+  let selectedDay = null;
+
+  function buildModal() {
+    const state = getDatePickerState(inputElement);
+    selectedYear = state.year;
+    selectedMonth = state.month;
+    selectedDay = state.day;
+
+    modal = document.createElement('div');
+    modal.className = 'date-picker-modal';
+
+    const content = document.createElement('div');
+    content.className = 'date-picker-content';
+
+    const header = document.createElement('div');
+    header.className = 'date-picker-header';
+
+    const prevBtn = document.createElement('button');
+    prevBtn.type = 'button';
+    prevBtn.className = 'date-picker-nav';
+    prevBtn.textContent = '◀';
+    prevBtn.addEventListener('click', () => {
+      selectedMonth -= 1;
+      if (selectedMonth < 1) {
+        selectedMonth = 12;
+        selectedYear -= 1;
+      }
+      render();
+    });
+
+    const title = document.createElement('div');
+    title.className = 'date-picker-title';
+    title.textContent = new Date(selectedYear, selectedMonth - 1, 1).toLocaleDateString('fr-FR', {
+      month: 'long',
+      year: 'numeric'
+    }).replace(/^./, s => s.toUpperCase());
+
+    const nextBtn = document.createElement('button');
+    nextBtn.type = 'button';
+    nextBtn.className = 'date-picker-nav';
+    nextBtn.textContent = '▶';
+    nextBtn.addEventListener('click', () => {
+      selectedMonth += 1;
+      if (selectedMonth > 12) {
+        selectedMonth = 1;
+        selectedYear += 1;
+      }
+      render();
+    });
+
+    header.appendChild(prevBtn);
+    header.appendChild(title);
+    header.appendChild(nextBtn);
+
+    const daysGrid = document.createElement('div');
+    daysGrid.className = 'date-picker-grid';
+
+    ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].forEach(label => {
+      const headerCell = document.createElement('div');
+      headerCell.className = 'date-picker-weekday';
+      headerCell.textContent = label;
+      daysGrid.appendChild(headerCell);
+    });
+
+    const calendarDays = document.createElement('div');
+    calendarDays.className = 'date-picker-days';
+
+    const firstDay = new Date(selectedYear, selectedMonth - 1, 1);
+    const leading = (firstDay.getDay() + 6) % 7;
+    const totalDays = new Date(selectedYear, selectedMonth, 0).getDate();
+
+    for (let i = 0; i < leading; i += 1) {
+      const emptyCell = document.createElement('div');
+      emptyCell.className = 'date-picker-day empty';
+      calendarDays.appendChild(emptyCell);
+    }
+
+    for (let day = 1; day <= totalDays; day += 1) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'date-picker-day';
+      button.textContent = day;
+
+      if (selectedDay === day && Number(inputElement.dataset.value?.split('-')[1]) === selectedMonth && Number(inputElement.dataset.value?.split('-')[0]) === selectedYear) {
+        button.classList.add('selected');
+      }
+
+      button.addEventListener('click', () => {
+        selectedDay = day;
+        render();
+      });
+
+      calendarDays.appendChild(button);
+    }
+
+    const actions = document.createElement('div');
+    actions.className = 'date-picker-actions';
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.type = 'button';
+    cancelBtn.className = 'date-picker-cancel';
+    cancelBtn.textContent = 'Annuler';
+    cancelBtn.addEventListener('click', closeModal);
+
+    const confirmBtn = document.createElement('button');
+    confirmBtn.type = 'button';
+    confirmBtn.className = 'date-picker-confirm';
+    confirmBtn.textContent = 'Valider';
+    confirmBtn.addEventListener('click', () => {
+      if (!selectedYear || !selectedMonth || !selectedDay) return;
+      const dateKey = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
+      inputElement.value = dateKey;
+      inputElement.dataset.value = dateKey;
+      updateDateInputDisplay(textInput, dateKey);
+      closeModal();
+    });
+
+    actions.appendChild(cancelBtn);
+    actions.appendChild(confirmBtn);
+
+    content.appendChild(header);
+    content.appendChild(daysGrid);
+    content.appendChild(calendarDays);
+    content.appendChild(actions);
+    modal.appendChild(content);
+
+    document.body.appendChild(modal);
+  }
+
+  function render() {
+    if (!modal) return;
+    modal.innerHTML = '';
+
+    const content = document.createElement('div');
+    content.className = 'date-picker-content';
+
+    const header = document.createElement('div');
+    header.className = 'date-picker-header';
+
+    const prevBtn = document.createElement('button');
+    prevBtn.type = 'button';
+    prevBtn.className = 'date-picker-nav';
+    prevBtn.textContent = '◀';
+    prevBtn.addEventListener('click', () => {
+      selectedMonth -= 1;
+      if (selectedMonth < 1) {
+        selectedMonth = 12;
+        selectedYear -= 1;
+      }
+      render();
+    });
+
+    const title = document.createElement('div');
+    title.className = 'date-picker-title';
+    title.textContent = new Date(selectedYear, selectedMonth - 1, 1).toLocaleDateString('fr-FR', {
+      month: 'long',
+      year: 'numeric'
+    }).replace(/^./, s => s.toUpperCase());
+
+    const nextBtn = document.createElement('button');
+    nextBtn.type = 'button';
+    nextBtn.className = 'date-picker-nav';
+    nextBtn.textContent = '▶';
+    nextBtn.addEventListener('click', () => {
+      selectedMonth += 1;
+      if (selectedMonth > 12) {
+        selectedMonth = 1;
+        selectedYear += 1;
+      }
+      render();
+    });
+
+    header.appendChild(prevBtn);
+    header.appendChild(title);
+    header.appendChild(nextBtn);
+
+    const grid = document.createElement('div');
+    grid.className = 'date-picker-grid';
+    ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].forEach(label => {
+      const cell = document.createElement('div');
+      cell.className = 'date-picker-weekday';
+      cell.textContent = label;
+      grid.appendChild(cell);
+    });
+
+    const days = document.createElement('div');
+    days.className = 'date-picker-days';
+
+    const firstDay = new Date(selectedYear, selectedMonth - 1, 1);
+    const leading = (firstDay.getDay() + 6) % 7;
+    const totalDays = new Date(selectedYear, selectedMonth, 0).getDate();
+
+    for (let i = 0; i < leading; i += 1) {
+      const emptyCell = document.createElement('div');
+      emptyCell.className = 'date-picker-day empty';
+      days.appendChild(emptyCell);
+    }
+
+    for (let day = 1; day <= totalDays; day += 1) {
+      const dayBtn = document.createElement('button');
+      dayBtn.type = 'button';
+      dayBtn.className = 'date-picker-day';
+      dayBtn.textContent = day;
+
+      const isSelected = day === selectedDay;
+      if (isSelected) dayBtn.classList.add('selected');
+
+      dayBtn.addEventListener('click', () => {
+        selectedDay = day;
+        render();
+      });
+
+      days.appendChild(dayBtn);
+    }
+
+    const actions = document.createElement('div');
+    actions.className = 'date-picker-actions';
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.type = 'button';
+    cancelBtn.className = 'date-picker-cancel';
+    cancelBtn.textContent = 'Annuler';
+    cancelBtn.addEventListener('click', closeModal);
+
+    const confirmBtn = document.createElement('button');
+    confirmBtn.type = 'button';
+    confirmBtn.className = 'date-picker-confirm';
+    confirmBtn.textContent = 'Valider';
+    confirmBtn.addEventListener('click', () => {
+      const dateKey = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
+      inputElement.value = dateKey;
+      inputElement.dataset.value = dateKey;
+      updateDateInputDisplay(textInput, dateKey);
+      closeModal();
+    });
+
+    actions.appendChild(cancelBtn);
+    actions.appendChild(confirmBtn);
+
+    content.appendChild(header);
+    content.appendChild(grid);
+    content.appendChild(days);
+    content.appendChild(actions);
+    modal.appendChild(content);
+  }
+
+  function openModal() {
+    if (modal) {
+      modal.remove();
+      modal = null;
+    }
+    const state = getDatePickerState(inputElement);
+    selectedYear = state.year;
+    selectedMonth = state.month;
+    selectedDay = state.day;
+    modal = document.createElement('div');
+    modal.className = 'date-picker-modal';
+    document.body.appendChild(modal);
+    render();
+  }
+
+  function closeModal() {
+    if (modal) {
+      modal.remove();
+      modal = null;
+    }
+  }
+
+  openButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    openModal();
+  });
+
+  textInput.addEventListener('click', (event) => {
+    event.preventDefault();
+    openModal();
+  });
+
+  if (inputElement.value) {
+    inputElement.dataset.value = inputElement.value;
+    updateDateInputDisplay(textInput, inputElement.value);
+  }
+
+  inputElement.style.display = 'none';
+  inputElement.parentNode.insertBefore(wrapper, inputElement);
+  wrapper.appendChild(inputElement);
+
+  return { input: textInput, open: openModal };
+}
+
+function initDatePickers() {
+  datePickers.single = createDatePicker(eventDateInput);
+  datePickers.start = createDatePicker(eventStartDateInput);
+  datePickers.end = createDatePicker(eventEndDateInput);
+}
+
 function toggleEventType() {
   const isSingle = eventTypeSelect.value === 'single';
   singleDateGroup.style.display = isSingle ? 'block' : 'none';
   multiDateGroup.style.display = isSingle ? 'none' : 'block';
-  
+
   if (isSingle) {
     eventStartDateInput.value = '';
     eventEndDateInput.value = '';
+    if (datePickers.start) updateDateInputDisplay(datePickers.start.input, '');
+    if (datePickers.end) updateDateInputDisplay(datePickers.end.input, '');
   } else {
     eventDateInput.value = '';
+    if (datePickers.single) updateDateInputDisplay(datePickers.single.input, '');
   }
 }
 
@@ -131,8 +473,7 @@ function renderCalendar() {
   for (let day = 1; day <= totalDays; day += 1) {
     const date = new Date(year, month, day);
     const dateKey = formatDateKey(date);
-    const dayEvents = getEventsForDate(dateKey);  // Récupère les événements du jour
-    const eventCount = dayEvents.length;
+    const eventCount = getEventsForDate(dateKey).length;
     const todayKey = formatDateKey(new Date());
 
     const cell = document.createElement('button');
@@ -140,10 +481,6 @@ function renderCalendar() {
     cell.className = 'day-cell';
     if (dateKey === todayKey) cell.classList.add('today-cell');
     if (eventCount > 0) cell.classList.add('has-events');
-    
-    // Ajouter une classe si c'est un événement multi-jour
-    const hasMultiDay = dayEvents.some(e => e.startDate && e.endDate);
-    if (hasMultiDay) cell.classList.add('has-multi-day');
 
     cell.innerHTML = `
       <span class="day-number">${day}</span>
@@ -154,6 +491,7 @@ function renderCalendar() {
       eventTypeSelect.value = 'single';
       toggleEventType();
       eventDateInput.value = dateKey;
+      if (datePickers.single) updateDateInputDisplay(datePickers.single.input, dateKey);
       eventTitleInput.focus();
     });
 
@@ -245,19 +583,22 @@ function resetForm() {
   editEventIdInput.value = '';
   eventTypeSelect.value = 'single';
   toggleEventType();
-  eventDateInput.value = formatDateKey(new Date());
+
+  const today = formatDateKey(new Date());
+  eventDateInput.value = today;
+  if (datePickers.single) updateDateInputDisplay(datePickers.single.input, today);
 }
 
 function submitEvent(eventDate, eventStartDate, eventEndDate, eventTitle) {
   const trimmedTitle = eventTitle.trim();
-  
+
   if (!trimmedTitle) {
     showMessage('Veuillez entrer un titre.', true);
     return;
   }
 
   const isSingle = eventTypeSelect.value === 'single';
-  
+
   if (isSingle && !eventDate) {
     showMessage('Veuillez sélectionner une date.', true);
     return;
@@ -286,8 +627,13 @@ function submitEvent(eventDate, eventStartDate, eventEndDate, eventTitle) {
 
     if (editId !== '') {
       const index = parseInt(editId, 10);
-      currentEvents[index] = payload;
-      showMessage('Événement modifié avec succès.');
+      if (index >= 0 && index < currentEvents.length) {
+        currentEvents[index] = payload;
+        showMessage('Événement modifié avec succès.');
+      } else {
+        showMessage('Erreur: index d\'événement invalide.', true);
+        return;
+      }
     } else {
       const exists = currentEvents.some(e => {
         if (e.date && payload.date) return e.date === payload.date && e.title === payload.title;
@@ -312,13 +658,17 @@ function submitEvent(eventDate, eventStartDate, eventEndDate, eventTitle) {
       return dateA.localeCompare(dateB);
     });
 
-    saveEvents(currentEvents);
+    if (!saveEvents(currentEvents)) {
+      showMessage('Erreur lors de la sauvegarde.', true);
+      return;
+    }
+
     resetForm();
     renderCalendar();
     renderEventsList();
   } catch (error) {
     console.error('Erreur:', error);
-    showMessage('Erreur lors de la sauvegarde.', true);
+    showMessage('Erreur lors de la sauvegarde: ' + error.message, true);
   }
 }
 
@@ -332,10 +682,13 @@ function editEvent(index) {
   if (event.date) {
     eventTypeSelect.value = 'single';
     eventDateInput.value = event.date;
+    if (datePickers.single) updateDateInputDisplay(datePickers.single.input, event.date);
   } else {
     eventTypeSelect.value = 'multi';
     eventStartDateInput.value = event.startDate;
     eventEndDateInput.value = event.endDate;
+    if (datePickers.start) updateDateInputDisplay(datePickers.start.input, event.startDate);
+    if (datePickers.end) updateDateInputDisplay(datePickers.end.input, event.endDate);
   }
 
   eventTitleInput.value = event.title;
@@ -348,7 +701,10 @@ function deleteEvent(index) {
 
   const currentEvents = getSavedEvents();
   currentEvents.splice(index, 1);
-  saveEvents(currentEvents);
+  if (!saveEvents(currentEvents)) {
+    showMessage('Erreur lors de la suppression.', true);
+    return;
+  }
   showMessage('Événement supprimé.');
   renderCalendar();
   renderEventsList();
@@ -368,7 +724,10 @@ eventForm.addEventListener('submit', (e) => {
 clearAllButton.addEventListener('click', () => {
   if (!window.confirm('Supprimer tous les événements ?')) return;
 
-  saveEvents([]);
+  if (!saveEvents([])) {
+    showMessage('Erreur lors de la suppression.', true);
+    return;
+  }
   showMessage('Tous les événements ont été supprimés.');
   renderCalendar();
   renderEventsList();
@@ -390,7 +749,12 @@ backButton.addEventListener('click', () => {
 
 (async function initCalendar() {
   await loadInitialEvents();
-  eventDateInput.value = formatDateKey(new Date());
+  initDatePickers();
+
+  const today = formatDateKey(new Date());
+  eventDateInput.value = today;
+  if (datePickers.single) updateDateInputDisplay(datePickers.single.input, today);
+
   toggleEventType();
   renderCalendar();
   renderEventsList();
