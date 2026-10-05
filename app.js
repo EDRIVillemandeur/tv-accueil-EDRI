@@ -126,19 +126,19 @@ async function loadEvents() {
     // Filtre pour les événements à venir
     const now = new Date();
     
-    const upcoming = allEvents
-    .filter(e => {
-     
-    const endDate = e.endDate || e.date;
-     
-    return new Date(`${endDate}T23:59:59`) >= now;
-    })
-    .sort((a, b) => {
-     
-    const dateA = e=> e.startDate || e.date;
-    return (a.startDate || a.date).localeCompare(b.startDate || b.date);
-     
-    });
+    const MAX_EVENTS_HOME = 3;
+    
+    const upcoming = events
+      .filter(e => {
+        const endDate = e.endDate || e.date;
+        return new Date(`${endDate}T23:59:59`) >= new Date();
+      })
+      .sort((a, b) => {
+        const dateA = a.startDate || a.date;
+        const dateB = b.startDate || b.date;
+        return dateA.localeCompare(dateB);
+      })
+      .slice(0, MAX_EVENTS_HOME);
 
     const eventsEl = $('events');
     if (!eventsEl) return;
