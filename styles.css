@@ -418,6 +418,17 @@ footer .separator {
   cursor: default;
 }
 
+.day-cell.has-multi-day {
+  border-left: 4px solid var(--accent);
+  border-right: 4px solid var(--accent);
+  background: rgba(var(--accent-rgb), 0.1);
+}
+
+.day-cell.has-multi-day.has-events .day-badge {
+  background: var(--accent);
+  color: #04151d;
+}
+
 .day-number {
   font-size: 20px;
   font-weight: bold;
