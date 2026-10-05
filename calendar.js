@@ -1,9 +1,7 @@
-const STORAGE_KEY = 'edri-events';
+const API_BASE = '/api/events';
 
 const monthYearEl = document.getElementById('month-year');
 const calendarDaysEl = document.getElementById('calendar-days');
-const eventDateInput = document.getElementById('event-date');
-const eventTitleInput = document.getElementById('event-title');
 const eventForm = document.getElementById('event-form');
 const formMessageEl = document.getElementById('form-message');
 const allEventsEl = document.getElementById('all-events');
@@ -12,8 +10,18 @@ const prevMonthButton = document.getElementById('prev-month');
 const nextMonthButton = document.getElementById('next-month');
 const backButton = document.getElementById('back-button');
 
+const eventTypeSelect = document.getElementById('event-type');
+const eventDateInput = document.getElementById('event-date');
+const eventStartDateInput = document.getElementById('event-start-date');
+const eventEndDateInput = document.getElementById('event-end-date');
+const eventTitleInput = document.getElementById('event-title');
+const singleDateGroup = document.getElementById('single-date-group');
+const multiDateGroup = document.getElementById('multi-date-group');
+const editEventIdInput = document.getElementById('edit-event-id');
+
 let currentMonth = new Date();
 currentMonth.setDate(1);
+let events = [];
 
 function formatDateKey(date) {
   const y = date.getFullYear();
@@ -22,61 +30,42 @@ function formatDateKey(date) {
   return `${y}-${m}-${d}`;
 }
 
-function getSavedEvents() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (error) {
-    return [];
+function toggleEventType() {
+  const isSingle = eventTypeSelect.value === 'single';
+  singleDateGroup.style.display = isSingle ? 'block' : 'none';
+  multiDateGroup.style.display = isSingle ? 'none' : 'block';
+  
+  if (isSingle) {
+    eventStartDateInput.value = '';
+    eventEndDateInput.value = '';
+  } else {
+    eventDateInput.value = '';
   }
 }
 
-function saveEvents(events) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-}
+eventTypeSelect.addEventListener('change', toggleEventType);
 
-async function loadServerEvents() {
+async function loadEvents() {
   try {
-    const response = await fetch('events.json?t=' + new Date().getTime(), { cache: 'no-store' });
-    if (!response.ok) throw new Error('Réponse serveur invalide');
-    
-    const data = await response.json();
-    if (!Array.isArray(data)) return [];
-    
-    return data;
+    const response = await fetch(API_BASE, { cache: 'no-store' });
+    if (!response.ok) throw new Error('Erreur serveur');
+    events = await response.json();
+    return true;
   } catch (error) {
-    console.error('Erreur chargement serveur:', error);
-    return [];
-  }
-}
-
-async function loadDefaultEvents() {
-  try {
-    // Charge les événements du serveur
-    const serverEvents = await loadServerEvents();
-    
-    // Fusionne avec les événements locaux
-    const localEvents = getSavedEvents();
-    const merged = [...serverEvents];
-    
-    // Ajoute les événements locaux qui ne sont pas sur le serveur
-    localEvents.forEach(localEvent => {
-      const exists = merged.some(se => se.date === localEvent.date && se.title === localEvent.title);
-      if (!exists) {
-        merged.push(localEvent);
-      }
-    });
-    
-    saveEvents(merged.sort((a, b) => a.date.localeCompare(b.date)));
-  } catch (error) {
-    console.error('Erreur fusion événements:', error);
+    console.error('Erreur chargement événements:', error);
+    showMessage('Erreur lors du chargement des événements.', true);
+    return false;
   }
 }
 
 function getEventsForDate(dateKey) {
-  return getSavedEvents().filter(event => event.date === dateKey);
+  return events.filter(event => {
+    if (event.date) return event.date === dateKey;
+    if (event.startDate && event.endDate) {
+      return dateKey >= event.startDate && dateKey <= event.endDate;
+    }
+    return false;
+  });
 }
 
 function renderMonthTitle() {
@@ -123,6 +112,8 @@ function renderCalendar() {
     `;
 
     cell.addEventListener('click', () => {
+      eventTypeSelect.value = 'single';
+      toggleEventType();
       eventDateInput.value = dateKey;
       eventTitleInput.focus();
     });
@@ -140,36 +131,62 @@ function renderCalendar() {
 }
 
 function renderEventsList() {
-  const events = getSavedEvents().sort((a, b) => a.date.localeCompare(b.date));
+  const sorted = [...events].sort((a, b) => {
+    const dateA = a.startDate || a.date;
+    const dateB = b.startDate || b.date;
+    return dateA.localeCompare(dateB);
+  });
 
-  if (!events.length) {
+  if (!sorted.length) {
     allEventsEl.innerHTML = '<p class="muted">Aucun événement enregistré.</p>';
     return;
   }
 
-  allEventsEl.innerHTML = events.map(event => {
-    const date = new Date(`${event.date}T12:00:00`);
+  allEventsEl.innerHTML = sorted.map((event, index) => {
+    const startDate = event.startDate || event.date;
+    const endDate = event.endDate;
+
+    const date = new Date(`${startDate}T12:00:00`);
     const formattedDate = new Intl.DateTimeFormat('fr-FR', {
       day: 'numeric',
       month: 'long',
       year: 'numeric'
     }).format(date);
 
+    let displayDate = formattedDate;
+    if (endDate) {
+      const end = new Date(`${endDate}T12:00:00`);
+      const formattedEndDate = new Intl.DateTimeFormat('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      }).format(end);
+      displayDate = `${formattedDate} → ${formattedEndDate}`;
+    }
+
     return `
       <div class="list-event">
-        <div class="list-event-date">${formattedDate}</div>
+        <div class="list-event-date">${displayDate}</div>
         <div class="list-event-title">${event.title}</div>
-        <button class="delete-event" type="button" data-date="${event.date}" data-title="${event.title}">Supprimer</button>
+        <div class="list-event-actions">
+          <button class="edit-event" type="button" data-index="${index}">Modifier</button>
+          <button class="delete-event" type="button" data-index="${index}">Supprimer</button>
+        </div>
       </div>
     `;
   }).join('');
 
+  document.querySelectorAll('.edit-event').forEach(button => {
+    button.addEventListener('click', () => {
+      const index = parseInt(button.dataset.index, 10);
+      editEvent(index);
+    });
+  });
+
   document.querySelectorAll('.delete-event').forEach(button => {
     button.addEventListener('click', () => {
-      const eventsAfterDelete = getSavedEvents().filter(event => !(event.date === button.dataset.date && event.title === button.dataset.title));
-      saveEvents(eventsAfterDelete);
-      renderCalendar();
-      renderEventsList();
+      const index = parseInt(button.dataset.index, 10);
+      deleteEvent(index);
     });
   });
 }
@@ -177,45 +194,150 @@ function renderEventsList() {
 function showMessage(message, isError = false) {
   formMessageEl.textContent = message;
   formMessageEl.classList.toggle('error', isError);
+  if (!isError) {
+    setTimeout(() => {
+      formMessageEl.textContent = '';
+    }, 3000);
+  }
 }
 
-function addEvent(eventDate, eventTitle) {
-  const trimmedTitle = eventTitle.trim();
-  if (!eventDate || !trimmedTitle) {
-    showMessage('Veuillez remplir la date et le titre.', true);
-    return;
-  }
-
-  const events = getSavedEvents();
-  const exists = events.some(event => event.date === eventDate && event.title.toLowerCase() === trimmedTitle.toLowerCase());
-  if (exists) {
-    showMessage('Cet événement existe déjà pour cette date.', true);
-    return;
-  }
-
-  events.push({ date: eventDate, title: trimmedTitle });
-  saveEvents(events.sort((a, b) => a.date.localeCompare(b.date)));
-
+function resetForm() {
   eventForm.reset();
-  eventDateInput.value = eventDate;
-  showMessage('Événement ajouté avec succès.');
-  renderCalendar();
-  renderEventsList();
+  editEventIdInput.value = '';
+  eventTypeSelect.value = 'single';
+  toggleEventType();
+  eventDateInput.value = formatDateKey(new Date());
 }
 
-eventForm.addEventListener('submit', (event) => {
-  event.preventDefault();
-  addEvent(eventDateInput.value, eventTitleInput.value);
+async function submitEvent(eventDate, eventStartDate, eventEndDate, eventTitle) {
+  const trimmedTitle = eventTitle.trim();
+  
+  if (!trimmedTitle) {
+    showMessage('Veuillez entrer un titre.', true);
+    return;
+  }
+
+  const isSingle = eventTypeSelect.value === 'single';
+  
+  if (isSingle && !eventDate) {
+    showMessage('Veuillez sélectionner une date.', true);
+    return;
+  }
+
+  if (!isSingle && (!eventStartDate || !eventEndDate)) {
+    showMessage('Veuillez sélectionner les dates de début et fin.', true);
+    return;
+  }
+
+  if (!isSingle && eventStartDate > eventEndDate) {
+    showMessage('La date de fin doit être après la date de début.', true);
+    return;
+  }
+
+  const editId = editEventIdInput.value;
+  
+  try {
+    let endpoint = API_BASE;
+    let method = 'POST';
+    let payload;
+
+    if (editId !== '') {
+      endpoint = `${API_BASE}/${editId}`;
+      method = 'PUT';
+    }
+
+    if (isSingle) {
+      payload = { date: eventDate, title: trimmedTitle };
+    } else {
+      payload = { startDate: eventStartDate, endDate: eventEndDate, title: trimmedTitle };
+    }
+
+    const response = await fetch(endpoint, {
+      method: method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Erreur serveur');
+    }
+
+    await loadEvents();
+    resetForm();
+    showMessage(editId !== '' ? 'Événement modifié avec succès.' : 'Événement ajouté avec succès.');
+    renderCalendar();
+    renderEventsList();
+  } catch (error) {
+    console.error('Erreur:', error);
+    showMessage('Erreur : ' + error.message, true);
+  }
+}
+
+function editEvent(index) {
+  const event = events[index];
+  if (!event) return;
+
+  editEventIdInput.value = index;
+
+  if (event.date) {
+    eventTypeSelect.value = 'single';
+    eventDateInput.value = event.date;
+  } else {
+    eventTypeSelect.value = 'multi';
+    eventStartDateInput.value = event.startDate;
+    eventEndDateInput.value = event.endDate;
+  }
+
+  eventTitleInput.value = event.title;
+  toggleEventType();
+  eventTitleInput.focus();
+}
+
+async function deleteEvent(index) {
+  if (!window.confirm('Supprimer cet événement ?')) return;
+
+  try {
+    const response = await fetch(`${API_BASE}/${index}`, { method: 'DELETE' });
+    if (!response.ok) throw new Error('Erreur serveur');
+
+    await loadEvents();
+    showMessage('Événement supprimé.');
+    renderCalendar();
+    renderEventsList();
+  } catch (error) {
+    console.error('Erreur:', error);
+    showMessage('Erreur lors de la suppression.', true);
+  }
+}
+
+eventForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const isSingle = eventTypeSelect.value === 'single';
+  submitEvent(
+    isSingle ? eventDateInput.value : '',
+    !isSingle ? eventStartDateInput.value : '',
+    !isSingle ? eventEndDateInput.value : '',
+    eventTitleInput.value
+  );
 });
 
-clearAllButton.addEventListener('click', () => {
-  const shouldClear = window.confirm('Voulez-vous vraiment supprimer tous les événements ?');
-  if (!shouldClear) return;
+clearAllButton.addEventListener('click', async () => {
+  if (!window.confirm('Supprimer tous les événements ?')) return;
 
-  saveEvents([]);
-  showMessage('Tous les événements ont été supprimés.');
-  renderCalendar();
-  renderEventsList();
+  try {
+    const indexesToDelete = events.length - 1;
+    for (let i = indexesToDelete; i >= 0; i--) {
+      await fetch(`${API_BASE}/${i}`, { method: 'DELETE' });
+    }
+    await loadEvents();
+    showMessage('Tous les événements ont été supprimés.');
+    renderCalendar();
+    renderEventsList();
+  } catch (error) {
+    console.error('Erreur:', error);
+    showMessage('Erreur lors de la suppression.', true);
+  }
 });
 
 prevMonthButton.addEventListener('click', () => {
@@ -233,8 +355,9 @@ backButton.addEventListener('click', () => {
 });
 
 (async function initCalendar() {
-  await loadDefaultEvents();
+  await loadEvents();
   eventDateInput.value = formatDateKey(new Date());
+  toggleEventType();
   renderCalendar();
   renderEventsList();
 })();
