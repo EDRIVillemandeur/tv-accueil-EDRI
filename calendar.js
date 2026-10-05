@@ -131,7 +131,8 @@ function renderCalendar() {
   for (let day = 1; day <= totalDays; day += 1) {
     const date = new Date(year, month, day);
     const dateKey = formatDateKey(date);
-    const eventCount = getEventsForDate(dateKey).length;
+    const dayEvents = getEventsForDate(dateKey);  // Récupère les événements du jour
+    const eventCount = dayEvents.length;
     const todayKey = formatDateKey(new Date());
 
     const cell = document.createElement('button');
@@ -139,6 +140,10 @@ function renderCalendar() {
     cell.className = 'day-cell';
     if (dateKey === todayKey) cell.classList.add('today-cell');
     if (eventCount > 0) cell.classList.add('has-events');
+    
+    // Ajouter une classe si c'est un événement multi-jour
+    const hasMultiDay = dayEvents.some(e => e.startDate && e.endDate);
+    if (hasMultiDay) cell.classList.add('has-multi-day');
 
     cell.innerHTML = `
       <span class="day-number">${day}</span>
