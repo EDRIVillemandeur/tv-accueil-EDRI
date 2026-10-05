@@ -27,7 +27,6 @@
     </header>
 
     <div class="calendar-container">
-      <!-- Calendrier -->
       <section class="calendar-section">
         <div class="calendar-controls">
           <button id="prev-month" class="month-nav-button" aria-label="Mois précédent">◀</button>
@@ -47,15 +46,14 @@
         </div>
       </section>
 
-      <!-- Formulaire d'ajout d'événement -->
       <section class="event-form-section card">
         <div class="card-heading">
           <span>Ajouter/Modifier un événement</span>
         </div>
-        
+
         <form id="event-form" class="event-form">
           <input type="hidden" id="edit-event-id" value="">
-          
+
           <div class="form-group">
             <label for="event-type">Type d'événement</label>
             <select id="event-type">
@@ -66,14 +64,14 @@
 
           <div id="single-date-group" class="form-group">
             <label for="event-date">Date de l'événement</label>
-            <input type="date" id="event-date">
+            <input type="text" id="event-date" readonly placeholder="JJ/MM/YYYY">
           </div>
 
           <div id="multi-date-group" class="form-group" style="display: none;">
             <label for="event-start-date">Date de début</label>
-            <input type="date" id="event-start-date">
+            <input type="text" id="event-start-date" readonly placeholder="JJ/MM/YYYY">
             <label for="event-end-date">Date de fin</label>
-            <input type="date" id="event-end-date">
+            <input type="text" id="event-end-date" readonly placeholder="JJ/MM/YYYY">
           </div>
 
           <div class="form-group">
@@ -88,12 +86,11 @@
       </section>
     </div>
 
-    <!-- Liste des événements -->
     <section class="events-section card">
       <div class="card-heading">
         <span>Tous les événements</span>
       </div>
-      
+
       <div id="all-events" class="events-list-full">
         <p class="muted">Chargement des événements…</p>
       </div>
