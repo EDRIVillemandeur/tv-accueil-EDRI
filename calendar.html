@@ -50,13 +50,30 @@
       <!-- Formulaire d'ajout d'événement -->
       <section class="event-form-section card">
         <div class="card-heading">
-          <span>Ajouter un événement</span>
+          <span>Ajouter/Modifier un événement</span>
         </div>
         
         <form id="event-form" class="event-form">
+          <input type="hidden" id="edit-event-id" value="">
+          
           <div class="form-group">
+            <label for="event-type">Type d'événement</label>
+            <select id="event-type">
+              <option value="single">Sur 1 jour</option>
+              <option value="multi">Sur plusieurs jours</option>
+            </select>
+          </div>
+
+          <div id="single-date-group" class="form-group">
             <label for="event-date">Date de l'événement</label>
             <input type="date" id="event-date" required>
+          </div>
+
+          <div id="multi-date-group" class="form-group" style="display: none;">
+            <label for="event-start-date">Date de début</label>
+            <input type="date" id="event-start-date">
+            <label for="event-end-date">Date de fin</label>
+            <input type="date" id="event-end-date">
           </div>
 
           <div class="form-group">
@@ -64,7 +81,7 @@
             <input type="text" id="event-title" placeholder="Ex: Réunion client, Visite..." required>
           </div>
 
-          <button type="submit" class="btn-submit">Ajouter l'événement</button>
+          <button type="submit" class="btn-submit">Enregistrer l'événement</button>
         </form>
 
         <div id="form-message" class="form-message"></div>
