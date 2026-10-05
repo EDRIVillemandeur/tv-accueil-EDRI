@@ -1,4 +1,3 @@
-const API_BASE = '/api/events';
 const STORAGE_KEY = 'edri-events';
 
 const monthYearEl = document.getElementById('month-year');
@@ -70,33 +69,21 @@ function saveEvents(eventsArray) {
 
 async function loadInitialEvents() {
   try {
+    const localEvents = getSavedEvents();
     const response = await fetch('events.json?t=' + new Date().getTime(), { cache: 'no-store' });
     if (!response.ok) throw new Error('Impossible de charger events.json');
-    
+
     const fileEvents = await response.json();
     if (!Array.isArray(fileEvents)) return;
 
-    const localEvents = getSavedEvents();
-    const merged = [...fileEvents];
-    
-    localEvents.forEach(localEvent => {
-      const exists = merged.some(e => {
-        if (e.date && localEvent.date) return e.date === localEvent.date && e.title === localEvent.title;
-        if (e.startDate && localEvent.startDate) {
-          return e.startDate === localEvent.startDate && e.endDate === localEvent.endDate && e.title === localEvent.title;
-        }
-        return false;
+    if (localEvents.length === 0) {
+      const seeded = [...fileEvents].sort((a, b) => {
+        const dateA = a.startDate || a.date;
+        const dateB = b.startDate || b.date;
+        return dateA.localeCompare(dateB);
       });
-      if (!exists) {
-        merged.push(localEvent);
-      }
-    });
-
-    saveEvents(merged.sort((a, b) => {
-      const dateA = a.startDate || a.date;
-      const dateB = b.startDate || b.date;
-      return dateA.localeCompare(dateB);
-    }));
+      saveEvents(seeded);
+    }
 
     events = getSavedEvents();
   } catch (error) {
