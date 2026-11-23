@@ -1,5 +1,4 @@
 const VILLEMANDEUR = { latitude: 48.003, longitude: 2.697, timezone: 'Europe/Paris' };
-const STORAGE_KEY = 'edri-events';
 
 const weatherText = {
   0: ['Ciel dégagé', '☀️'],
@@ -26,23 +25,12 @@ const weatherText = {
 
 const $ = (id) => document.getElementById(id);
 
-function getSavedEvents() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (error) {
-    return [];
-  }
-}
-
 function updateClock() {
   try {
     const now = new Date();
     const clockEl = $('clock');
     const todayEl = $('today');
-    
+
     if (clockEl) {
       clockEl.textContent = now.toLocaleTimeString('fr-FR', {
         hour: '2-digit',
@@ -65,11 +53,11 @@ function updateClock() {
 
 async function loadWeather() {
   try {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${VILLEMANDEUR.latitude}&longitude=${VILLEMANDEUR.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=${VILLEMANDEUR.timezone}`;
-    
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${VILLEMANDEUR.latitude}&longitude=${VILLEMANDEUR.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=${VILLEMANDEUR.timezone}`;
+
     const response = await fetch(url, { timeout: 5000 });
     if (!response.ok) throw new Error('Réponse météo invalide');
-    
+
     const data = await response.json();
     const current = data.current;
     const daily = data.daily;
@@ -98,39 +86,28 @@ async function loadWeather() {
 }
 
 async function loadEvents() {
+  const eventsEl = $('events');
+  if (!eventsEl) return;
+
   try {
-    let fileEvents = [];
-    try {
-      const response = await fetch('events.json?t=' + new Date().getTime(), { cache: 'no-store' });
-      if (response.ok) {
-        fileEvents = await response.json();
-        if (!Array.isArray(fileEvents)) fileEvents = [];
-      }
-    } catch (e) {
-      console.warn('Impossible de charger events.json', e);
-    }
+    const response = await fetch(`events.json?t=${Date.now()}`, { cache: 'no-store' });
+    if (!response.ok) throw new Error('Impossible de charger events.json');
 
-    const localEvents = getSavedEvents();
-    const allEvents = [...fileEvents];
+    const fileEvents = await response.json();
+    if (!Array.isArray(fileEvents)) throw new Error('Format events.json invalide');
 
-    localEvents.forEach(localEvent => {
-      const exists = allEvents.some(e => {
-        if (e.date && localEvent.date) return e.date === localEvent.date && e.title === localEvent.title;
-        if (e.startDate && localEvent.startDate) {
-          return e.startDate === localEvent.startDate && e.endDate === localEvent.endDate && e.title === localEvent.title;
-        }
-        return false;
-      });
-      if (!exists) {
-        allEvents.push(localEvent);
-      }
-    });
+    // Accepte le champ historique « Date » ainsi que « date ».
+    const events = fileEvents
+      .map(event => ({
+        ...event,
+        date: event.date || event.Date
+      }))
+      .filter(event => event.title && (event.date || (event.startDate && event.endDate)));
 
     const now = new Date();
-    const MAX_EVENTS_HOME = 3;
-    const upcoming = allEvents
-      .filter(e => {
-        const endDate = e.endDate || e.date;
+    const upcoming = events
+      .filter(event => {
+        const endDate = event.endDate || event.date;
         return new Date(`${endDate}T23:59:59`) >= now;
       })
       .sort((a, b) => {
@@ -138,45 +115,31 @@ async function loadEvents() {
         const dateB = b.startDate || b.date;
         return dateA.localeCompare(dateB);
       })
-      .slice(0, MAX_EVENTS_HOME);
-
-    const eventsEl = $('events');
-    if (!eventsEl) return;
+      .slice(0, 3);
 
     eventsEl.innerHTML = upcoming.length
-      ? upcoming.map(e => {
-          const startDate = e.startDate || e.date;
-          const endDate = e.endDate;
+      ? upcoming.map(event => {
+          const startDate = event.startDate || event.date;
           const date = new Date(`${startDate}T12:00:00`);
           const monthLabel = date.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', '');
 
           let displayDate = `<strong>${date.getDate()}</strong>${monthLabel}`;
-
-          if (endDate) {
-            const end = new Date(`${endDate}T12:00:00`);
+          if (event.endDate) {
+            const end = new Date(`${event.endDate}T12:00:00`);
             displayDate = `<strong>${date.getDate()}-${end.getDate()}</strong>${monthLabel}`;
           }
 
           return `
             <article class="event">
               <div class="event-date">${displayDate}</div>
-              <div class="event-title">${e.title}</div>
+              <div class="event-title">${event.title}</div>
             </article>
           `;
         }).join('')
       : '<p class="muted">Aucun événement à venir.</p>';
-
-    document.querySelectorAll('.event').forEach(card => {
-      card.style.cursor = 'pointer';
-      card.addEventListener('click', () => {
-        window.location.href = 'calendar.html';
-      });
-    });
-
   } catch (e) {
     console.error('Erreur événements:', e);
-    const eventsEl = $('events');
-    if (eventsEl) eventsEl.innerHTML = '<p class="muted">Impossible de charger les événements.</p>';
+    eventsEl.innerHTML = '<p class="muted">Impossible de charger les événements.</p>';
   }
 }
 
@@ -189,14 +152,6 @@ function initializeUI() {
     setInterval(updateClock, 1000);
     setInterval(() => loadWeather().catch(e => console.error('Erreur rafraîchissement météo:', e)), 30 * 60 * 1000);
     setInterval(() => loadEvents().catch(e => console.error('Erreur rafraîchissement événements:', e)), 10 * 1000);
-
-    const eventsCard = document.querySelector('.events-card');
-    if (eventsCard) {
-      eventsCard.style.cursor = 'pointer';
-      eventsCard.addEventListener('click', () => {
-        window.location.href = 'calendar.html';
-      });
-    }
   } catch (e) {
     console.error('Erreur initialisation:', e);
   }
